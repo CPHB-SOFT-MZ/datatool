@@ -5,9 +5,10 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-
+from django.shortcuts import redirect, render_to_response
 from datatool.myapp.models import Document
 from datatool.myapp.forms import DocumentForm
+import pandas as pd
 
 def list(request):
     # Handle file upload
@@ -19,7 +20,7 @@ def list(request):
 
             request.session['document'] = request.FILES['docfile'].name
             # Redirect to the document list after POST
-            return HttpResponseRedirect(reverse('list'))
+            return HttpResponseRedirect(reverse('analyze'))
     else:
         form = DocumentForm()  # A empty, unbound form
 
@@ -48,4 +49,35 @@ def remove(request, file_name):
             print(e)
 
         return HttpResponseRedirect(reverse('list'))
+
+def analyze(request):
+    if request.method == 'GET':
+        docname = request.session['document']
+        headers = docname
+        if docname.endswith('.csv'):
+            csv = pd.read_csv('media/documents/' + docname)
+            headers = csv.axes[1]
+            request.session['headers'] = []
+            saved_list = request.session['headers']
+            for header in headers:
+                saved_list.append(header)
+            request.session['headers'] = saved_list
+            print(request.session['headers'])
+        return render(
+            request,
+            'analyze.html',
+            {
+                'headers': headers
+            }
+        )
+    if request.method == 'POST':
+        for header in request.POST.getlist('headers'):
+            print(header)
+        return render(
+            request,
+            'analyze.html',
+            {
+                'selected': request.POST.getlist('headers')
+            }
+        )
 
