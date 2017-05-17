@@ -8,8 +8,10 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, render_to_response
 from datatool.myapp.models import Document
 from datatool.myapp.forms import DocumentForm
+from datatool.myapp.analyzetools.tools import Tools
 import pandas as pd
 
+tool = Tools()
 def list(request):
     # Handle file upload
     if request.method == 'POST':
@@ -71,8 +73,11 @@ def analyze(request):
             }
         )
     if request.method == 'POST':
+        docname = request.session['document']
+        csv = pd.read_csv('media/documents/' + docname)
+
         for header in request.POST.getlist('headers'):
-            print(header)
+            print(tool.maximum_value(csv, header))
         return render(
             request,
             'analyze.html',
