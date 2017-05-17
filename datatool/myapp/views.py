@@ -60,30 +60,28 @@ def analyze(request):
             csv = pd.read_csv('media/documents/' + docname)
             tool.set_csv(csv)
             headers = csv.axes[1]
-            request.session['headers'] = []
-            saved_list = request.session['headers']
-            for header in headers:
-                saved_list.append(header)
-            request.session['headers'] = saved_list
-            print(request.session['headers'])
         return render(
             request,
             'analyze.html',
             {
+                'functions': 'AMAX',
                 'headers': headers
             }
         )
-    if request.method == 'POST':
-        docname = request.session['document']
-        csv = pd.read_csv('media/documents/' + docname)
 
-        for header in request.POST.getlist('headers'):
-            print(tool.maximum_value(header))
+def analyze_data(request):
+    if request.method == 'POST':
+        for function in request.POST.getlist('functions'):
+            if function == "AMAX":
+                for header in request.POST.getlist('AMAX_headers'):
+                    print(tool.maximum_value(header))
+            elif function == "FUNCTION2":
+                print("Do something else")
         return render(
             request,
             'analyze.html',
             {
-                'selected': request.POST.getlist('headers')
+                'selected': request.POST.getlist('AMAX_headers')
             }
         )
 

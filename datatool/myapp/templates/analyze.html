@@ -11,11 +11,13 @@
         <li>{{ header }}</li>
     {% endfor %}
 </ul>
-<form action="{% url "analyze" %}" method="POST">
+<form action="{% url "analyze-data" %}" method="POST">
 {% csrf_token %}
+    <label>Max</label>
+    <input type="checkbox" value="{{ functions }}" name="functions"><br>
     {% for header in headers %}
         <label for="">{{ header }}</label>
-        <input type="checkbox" value="{{header}}" name="headers"><br>
+        <input type="checkbox" value="{{header}}" name="{{ functions }}_headers"><br>
     {% endfor %}
     {{ form.errors }}
     {{ form.non_field_errors }}

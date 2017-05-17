@@ -11,3 +11,7 @@ class Tools:
     def maximum_value(self, header):
         return np.amax(np.array(self.csv[header]))
 
+    options = {
+        'AMAX' : maximum_value,
+    }
+
