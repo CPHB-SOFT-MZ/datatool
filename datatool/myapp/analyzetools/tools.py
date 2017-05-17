@@ -3,11 +3,15 @@ import numpy as np
 
 class Tools:
     def __init__(self):
-        self.csv = ""
+        self.csv = pd.DataFrame()
 
     def set_csv(self, csv):
-        self.csv = csv
+        self.csv = pd.DataFrame(csv)
 
-    def maximum_value(self, header):
-        return np.amax(np.array(self.csv[header]))
+    def maximum_value(self, value_headers, info_headers):
+        df_return = []
+        for value_header in value_headers:
+            df = self.csv[info_headers + [value_header]]
+            df_return.append(df.ix[np.argmax(np.array(self.csv[value_header]))])
+        return df_return
 

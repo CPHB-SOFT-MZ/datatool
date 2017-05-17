@@ -73,8 +73,7 @@ def analyze_data(request):
     if request.method == 'POST':
         for function in request.POST.getlist('functions'):
             if function == "AMAX":
-                for header in request.POST.getlist('AMAX_headers'):
-                    print(tool.maximum_value(header))
+                print(tool.maximum_value(request.POST.getlist('AMAX_headers'), request.POST.getlist('info_headers')))
             elif function == "FUNCTION2":
                 print("Do something else")
         return render(
