@@ -2,6 +2,9 @@
 ## Prerequisites
 - Python3
 - Django
+- Numpy
+- Bokeh
+- Pandas
 
 ## How to make it run
 - Clone this repository
