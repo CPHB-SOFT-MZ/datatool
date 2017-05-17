@@ -12,15 +12,24 @@ from datatool.myapp.analyzetools.tools import Tools
 import pandas as pd
 
 tool = Tools()
+
+# This is actually our index
+# TODO: Rename to index so we can make it look nicer. Or at least redirect to this view on the index
 def list(request):
-    # Handle file upload
+
+    # Handle file upload (if form is submitted)
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             newdoc = Document(docfile=request.FILES['docfile'], file_name=request.FILES['docfile'])
+
+            # This both saves in our database and our directory
+            # TODO: Check that the comment above is actually valid
             newdoc.save()
 
+            # Add the documents filename to the session (This is the one we're working at)
             request.session['document'] = request.FILES['docfile'].name
+
             # Redirect to the document list after POST
             return HttpResponseRedirect(reverse('analyze'))
     else:
@@ -28,7 +37,7 @@ def list(request):
 
     # Load documents for the list page
     documents = Document.objects.all()
-    # print(request.session['document'])
+
     # Render list page with the documents and the form
     return render(
         request,
@@ -36,13 +45,15 @@ def list(request):
         {'documents': documents, 'form': form}
     )
 
-
+# Deletes a file when the delete link is clicked on the index page
+# TODO: Make it work so it also removes the file in the dir
 def remove(request, file_name):
     if request.method == 'GET':
         doc = Document.objects.get(file_name=file_name)
         doc.delete()
         try:
             print(doc.docfile.url)
+
             # Of some reason doesn't remove the file from the directory
             if os.path.isfile(doc.docfile.url):
                 os.remove(doc.docfile.url)
@@ -54,12 +65,20 @@ def remove(request, file_name):
 
 def analyze(request):
     if request.method == 'GET':
+
+        # Get the document name from the session
         docname = request.session['document']
-        headers = docname
+
+        # Prepare a variable to hold a list of our column headers
+        headers = None
+
+        # If the document is a csv file, set the CSV for our tool and load the column headers into the headers variable
         if docname.endswith('.csv'):
             csv = pd.read_csv('media/documents/' + docname)
             tool.set_csv(csv)
             headers = csv.axes[1]
+
+        # TODO: Give a list of functions instead of just AMAX
         return render(
             request,
             'analyze.html',
@@ -69,13 +88,21 @@ def analyze(request):
             }
         )
 
+# This method is called when the form is submitted and will take care of analyzing the data
 def analyze_data(request):
     if request.method == 'POST':
+
+        # For every function we have checked in our form
         for function in request.POST.getlist('functions'):
+
+            # TODO: Implement the rest of the ifs
+            # TODO: Add all results, or a representation of the results to a list collecting everything for our template
             if function == "AMAX":
                 print(tool.maximum_value(request.POST.getlist('AMAX_headers'), request.POST.getlist('info_headers')))
-            elif function == "FUNCTION2":
+            if function == "FUNCTION2":
                 print("Do something else")
+
+        # TODO: Render the data.html template with every calculated data as well as graphs. Maybe in a list of objects?
         return render(
             request,
             'analyze.html',

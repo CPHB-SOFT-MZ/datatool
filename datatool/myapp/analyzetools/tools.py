@@ -8,6 +8,7 @@ class Tools:
     def set_csv(self, csv):
         self.csv = pd.DataFrame(csv)
 
+    # Finds the row with maximum value for each value header and returns the value and all requested info headers
     def maximum_value(self, value_headers, info_headers):
         df_return = []
         for value_header in value_headers:
