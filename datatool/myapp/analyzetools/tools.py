@@ -2,6 +2,12 @@ import pandas as pd
 import numpy as np
 
 class Tools:
-    def maximum_value(self, csv, header):
-        return np.amax(np.array(csv[header]))
+    def __init__(self):
+        self.csv = ""
+
+    def set_csv(self, csv):
+        self.csv = csv
+
+    def maximum_value(self, header):
+        return np.amax(np.array(self.csv[header]))
 

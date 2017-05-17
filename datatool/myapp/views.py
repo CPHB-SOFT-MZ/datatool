@@ -58,6 +58,7 @@ def analyze(request):
         headers = docname
         if docname.endswith('.csv'):
             csv = pd.read_csv('media/documents/' + docname)
+            tool.set_csv(csv)
             headers = csv.axes[1]
             request.session['headers'] = []
             saved_list = request.session['headers']
@@ -77,7 +78,7 @@ def analyze(request):
         csv = pd.read_csv('media/documents/' + docname)
 
         for header in request.POST.getlist('headers'):
-            print(tool.maximum_value(csv, header))
+            print(tool.maximum_value(header))
         return render(
             request,
             'analyze.html',
