@@ -15,6 +15,7 @@ import pandas as pd
 
 tool = Tools()
 
+
 # This is actually our index
 # TODO: Rename to index so we can make it look nicer. Or at least redirect to this view on the index
 def list(request):
@@ -47,6 +48,7 @@ def list(request):
         {'documents': documents, 'form': form}
     )
 
+
 # Deletes a file when the delete link is clicked on the index page
 # TODO: Make it work so it also removes the file in the dir
 def remove(request, file_name):
@@ -64,6 +66,7 @@ def remove(request, file_name):
             print(e)
 
         return HttpResponseRedirect(reverse('list'))
+
 
 def analyze(request):
     if request.method == 'GET':
@@ -93,6 +96,7 @@ def analyze(request):
                 'headers': headers
             }
         )
+
 
 # This method is called when the form is submitted and will take care of analyzing the data
 def analyze_data(request):

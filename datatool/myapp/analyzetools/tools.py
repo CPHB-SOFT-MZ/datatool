@@ -5,6 +5,8 @@ from bokeh.io import output_file, show
 from bokeh.plotting import figure
 from bokeh.charts import Histogram, Bar
 
+from datatool.myapp.analyzetools.customObjects import Maximum
+
 
 class Tools:
     def __init__(self):
@@ -16,20 +18,17 @@ class Tools:
     # Finds the row with maximum value for each value header and returns the value and all requested info headers
     def maximum_value(self, value_headers, info_headers):
         df_return = []
-        index = 0
         for value_header in value_headers:
+            ret_max = Maximum()
 
-            #df_return.update({value_header})
             df = self.csv[info_headers + [value_header]]
 
             value_pairs = df.ix[np.argmax(np.array(self.csv[value_header]))]
-            df_return.append({'info_headers': {},
-                              'value_header': {value_header: value_pairs[value_header]}
-                              })
-            for info_header in info_headers:
-                df_return[index]['info_headers'].update({info_header: value_pairs[info_header]})
-            index = index + 1
+            ret_max.value_header = {value_header: value_pairs[value_header]}
 
+            for info_header in info_headers:
+                ret_max.append_info_header(info_header, value_pairs[info_header])
+            df_return.append(ret_max)
         return df_return
 
     def bar_chart(self, value_header):
