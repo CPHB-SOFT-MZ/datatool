@@ -1,6 +1,8 @@
+from bokeh.plotting import Figure
 from django.test import TestCase
 from datatool.myapp.analyzetools.tools import Tools
 import pandas as pd
+from bokeh.charts import Chart
 
 
 class ToolsTestCase(TestCase):
@@ -17,6 +19,11 @@ class ToolsTestCase(TestCase):
         # and get the data for policyID, county, and statecode
         l = self.tools.maximum_value(['eq_site_limit', 'point_longitude'], ['policyID', 'county', 'statecode'])
 
+        print(l[0].value_header)
         # Check if the policyID retrieved in the objects are correct
-        self.assertEqual(l[0].policyID, 340585)
-        self.assertEqual(l[1].policyID, 154795)
+        self.assertEqual(l[0].info_headers['policyID'], 340585)
+        self.assertEqual(l[1].info_headers['policyID'], 154795)
+
+    def test_bar_chart(self):
+        data = self.tools.bar_chart("county")
+        self.assertIsInstance(data, Chart)
