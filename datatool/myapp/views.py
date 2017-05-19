@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 
+from bokeh.embed import components
+from bokeh.resources import CDN
 from django.shortcuts import render
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
@@ -79,11 +81,15 @@ def analyze(request):
             headers = csv.axes[1]
 
         # TODO: Give a list of functions instead of just AMAX
+        functions = {
+            'amax': 'AMAX',
+            'bar': 'BAR'
+        }
         return render(
             request,
             'analyze.html',
             {
-                'functions': 'AMAX',
+                'functions': functions,
                 'headers': headers
             }
         )
@@ -91,22 +97,30 @@ def analyze(request):
 # This method is called when the form is submitted and will take care of analyzing the data
 def analyze_data(request):
     if request.method == 'POST':
-
+        results = {}
         # For every function we have checked in our form
         for function in request.POST.getlist('functions'):
 
             # TODO: Implement the rest of the ifs
             # TODO: Add all results, or a representation of the results to a list collecting everything for our template
             if function == "AMAX":
-                print(tool.maximum_value(request.POST.getlist('AMAX_headers'), request.POST.getlist('info_headers')))
-            if function == "FUNCTION2":
-                print("Do something else")
+                amax = tool.maximum_value(request.POST.getlist('AMAX_headers'), request.POST.getlist('AMAX_info_headers'))
+                results.update({"amax": amax})
+            elif function == "BAR":
+                # Get the Chart object from our tool and convert it to the required components to show in the template
+                p = tool.bar_chart(request.POST['BAR_header'])
+                script, div = components(p)
+                results.update({'bar': {
+                    'script': script,
+                    'div': div
+                }})
 
         # TODO: Render the data.html template with every calculated data as well as graphs. Maybe in a list of objects?
         return render(
             request,
-            'analyze.html',
+            'data.html',
             {
+                'results' : results,
                 'selected': request.POST.getlist('AMAX_headers')
             }
         )
