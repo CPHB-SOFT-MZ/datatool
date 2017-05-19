@@ -33,6 +33,20 @@
     <label>{{ header }}</label>
     <input type="radio" value="{{ header }}" name="{{ functions.bar }}_header">
 {% endfor %}
+
+<hr>
+
+<label>Histogram</label>
+
+<input type="checkbox" value="{{ functions.hist }}" name="functions">
+{% for header in headers %}
+    <label>{{ header }}</label>
+    <input type="radio" value="{{ header }}" name="{{ functions.hist }}_label">
+{% endfor %}
+{% for header in headers %}
+    <label>{{ header }}</label>
+    <input type="radio" value="{{ header }}" name="{{ functions.hist }}_value">
+{% endfor %}
     {{ form.errors }}
     {{ form.non_field_errors }}
 <input type="submit" value="Submit" />

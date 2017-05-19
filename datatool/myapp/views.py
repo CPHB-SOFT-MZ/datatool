@@ -86,7 +86,8 @@ def analyze(request):
         # TODO: Give a list of functions instead of just AMAX
         functions = {
             'amax': 'AMAX',
-            'bar': 'BAR'
+            'bar': 'BAR',
+            'hist': 'HIST'
         }
         return render(
             request,
@@ -110,11 +111,20 @@ def analyze_data(request):
             if function == "AMAX":
                 amax = tool.maximum_value(request.POST.getlist('AMAX_headers'), request.POST.getlist('AMAX_info_headers'))
                 results.update({"amax": amax})
+
             elif function == "BAR":
                 # Get the Chart object from our tool and convert it to the required components to show in the template
                 p = tool.bar_chart(request.POST['BAR_header'])
                 script, div = components(p)
                 results.update({'bar': {
+                    'script': script,
+                    'div': div
+                }})
+
+            elif function == "HIST":
+                p = tool.histogram(request.POST['HIST_label'], request.POST['HIST_value'])
+                script, div = components(p)
+                results.update({'hist': {
                     'script': script,
                     'div': div
                 }})

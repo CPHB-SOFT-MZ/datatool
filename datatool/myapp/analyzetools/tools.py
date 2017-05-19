@@ -32,5 +32,14 @@ class Tools:
         return df_return
 
     def bar_chart(self, value_header):
-        p = Bar(self.csv[value_header], label=value_header, title=value_header)
+        p = Bar(self.csv[value_header], label=value_header, title=value_header, plot_width=800)
+        return p
+
+
+    def histogram(self, value_header, label_header=None):
+        p = None
+        if label_header != None:
+            p = Histogram(self.csv, label=label_header, values=value_header, title=value_header, plot_width=800)
+        else:
+            p = Histogram(self.csv, values=value_header, title=value_header, plot_width=800)
         return p

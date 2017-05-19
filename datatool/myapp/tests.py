@@ -27,3 +27,10 @@ class ToolsTestCase(TestCase):
     def test_bar_chart(self):
         data = self.tools.bar_chart("county")
         self.assertIsInstance(data, Chart)
+
+    def test_histogram(self):
+
+        hist1 = self.tools.histogram(value_header="point_granularity")
+        hist2 = self.tools.histogram(value_header="point_granularity", label_header="county")
+        self.assertIsInstance(hist1, Chart)
+        self.assertIsInstance(hist2, Chart)
