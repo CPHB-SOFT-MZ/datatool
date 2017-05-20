@@ -110,6 +110,7 @@ def analyze_data(request):
 
         def put_result(result):
             results.update({result[0]: result[1]})
+
         def put_chart(result):
             script, div = components(result[1])
 

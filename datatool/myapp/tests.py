@@ -43,3 +43,10 @@ class ToolsTestCase(TestCase):
         self.assertIsInstance(hist2[1], Chart)
         self.assertEqual(hist1[0], "hist")
         self.assertEqual(hist1[0], "hist")
+
+    def test_occurences(self):
+        queue = Queue()
+        self.tools.occurences(queue, ("county", "statecode"))
+        occ = queue.get()
+        self.assertEqual(occ[1][1].info_headers['FL'], 36634)
+        self.assertEqual(occ[1][0].info_headers['DUVAL COUNTY'], 1894)
