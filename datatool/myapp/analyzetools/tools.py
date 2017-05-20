@@ -75,6 +75,7 @@ class Tools:
             df_return.append(res_medi)
         q.put(('median', df_return))
 
+    # TODO: Needs to be rewritten after a test has been written and run
     def average_value(self, q, value_headers, info_headers):
         df_return = []
         for value_header in value_headers:
