@@ -36,10 +36,10 @@ class Tools:
         q.put(('bar', bar))
 
 
-    def histogram(self, q, val_header, label_header=None):
+    def histogram(self, q, value_header, label_header=None):
         print("Generating histogram")
         if label_header is not None:
-            q.put(('hist', Histogram(self.csv, label=label_header, values=val_header, title=val_header, plot_width=800, legend=False)))
+            q.put(('hist', Histogram(self.csv, label=label_header, values=value_header, title=value_header, plot_width=800, legend=False)))
         else:
-            q.put(('hist', Histogram(self.csv, values=val_header, title=val_header, plot_width=800, legend=False)))
+            q.put(('hist', Histogram(self.csv, values=value_header, title=value_header, plot_width=800, legend=False)))
 
