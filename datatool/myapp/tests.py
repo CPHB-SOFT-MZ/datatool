@@ -29,7 +29,6 @@ class ToolsTestCase(TestCase):
         self.assertIsInstance(data, Chart)
 
     def test_histogram(self):
-
         hist1 = self.tools.histogram(value_header="point_granularity")
         hist2 = self.tools.histogram(value_header="point_granularity", label_header="county")
         self.assertIsInstance(hist1, Chart)

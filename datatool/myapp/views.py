@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 import os
-
+from threading import Thread
 from bokeh.embed import components
-from bokeh.resources import CDN
 from django.shortcuts import render
-from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect, render_to_response
+from queue import Queue
+
 from datatool.myapp.models import Document
 from datatool.myapp.forms import DocumentForm
 from datatool.myapp.analyzetools.tools import Tools
 import pandas as pd
+
 
 tool = Tools()
 
@@ -102,40 +102,58 @@ def analyze(request):
 # This method is called when the form is submitted and will take care of analyzing the data
 def analyze_data(request):
     if request.method == 'POST':
+        chart_queue = Queue()
+        res_queue = Queue()
         results = {}
+        err_messages = {}
+        threads = []
+
+        def put_result(result):
+            results.update({result[0]: result[1]})
+        def put_chart(result):
+            script, div = components(result[1])
+
+            results.update({result[0]: {
+                'script': script,
+                'div': div
+            }})
+            print("Done with ", result[0])
         # For every function we have checked in our form
-        for function in request.POST.getlist('functions'):
+        for func in request.POST.getlist('functions'):
 
             # TODO: Implement the rest of the ifs
             # TODO: Add all results, or a representation of the results to a list collecting everything for our template
-            if function == "AMAX":
-                amax = tool.maximum_value(request.POST.getlist('AMAX_headers'), request.POST.getlist('AMAX_info_headers'))
-                results.update({"amax": amax})
+            if func == "AMAX":
+                amax_thread = Thread(target=tool.maximum_value, args=(res_queue, request.POST.getlist('AMAX_headers'),
+                                               request.POST.getlist('AMAX_info_headers')))
 
-            elif function == "BAR":
+                threads.append(amax_thread)
+                amax_thread.start()
+
+            elif func == "BAR":
                 # Get the Chart object from our tool and convert it to the required components to show in the template
-                p = tool.bar_chart(request.POST['BAR_header'])
-                script, div = components(p)
-                results.update({'bar': {
-                    'script': script,
-                    'div': div
-                }})
+                bar_thread = Thread(target=tool.bar_chart, args=(chart_queue, request.POST['BAR_header']))
+                threads.append(bar_thread)
+                bar_thread.start()
 
-            elif function == "HIST":
-                p = tool.histogram(request.POST['HIST_label'], request.POST['HIST_value'])
-                script, div = components(p)
-                results.update({'hist': {
-                    'script': script,
-                    'div': div
-                }})
+            elif func == "HIST":
+                hist_thread = Thread(target=tool.histogram, args=(chart_queue, request.POST['HIST_label'], request.POST['HIST_value']))
+                threads.append(hist_thread)
+                hist_thread.start()
 
-        # TODO: Render the data.html template with every calculated data as well as graphs. Maybe in a list of objects?
+        for th in threads:
+            th.join()
+        while not chart_queue.empty():
+            put_chart(chart_queue.get())
+        while not res_queue.empty():
+            put_result(res_queue.get())
+
         return render(
             request,
             'data.html',
             {
                 'results' : results,
-                'selected': request.POST.getlist('AMAX_headers')
+                'errors': err_messages
             }
         )
 
