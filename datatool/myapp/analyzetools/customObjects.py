@@ -1,4 +1,4 @@
-class Maximum:
+class DataContainer:
     def __init__(self):
         self.info_headers = {}
         self.value_header = {}
