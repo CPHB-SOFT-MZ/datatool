@@ -60,8 +60,8 @@ class Tools:
 
     def unique_count(self, value_headers, info_headers):
         tuple_list = []
-            for value_header in value_headers:
-                array = np.array(self.csv[value_header])
-                info, count = np.unique(array, return_counts=true)
-                tuple_list.append(zip(info, count))
+        for value_header in value_headers:
+            array = np.array(self.csv[value_header])
+            info, count = np.unique(array, return_counts=True)
+            tuple_list.append(zip(info, count))
         return tuple_list
