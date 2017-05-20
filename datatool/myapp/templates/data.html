@@ -1,10 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link
+    href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css"
+    rel="stylesheet" type="text/css">
+<link
+    href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.css"
+    rel="stylesheet" type="text/css">
+
     <meta charset="UTF-8">
     <title>Data</title>
 </head>
+
 <body>
-    {{ data }}
+<h3>Amax info</h3>
+{% for obj in results.amax %}
+    {% for key, val in obj.value_header.items %}
+        <br>{{ key }}
+        <br>{{ val }}
+    {% endfor %}
+    {% for key, val in obj.info_headers.items %}
+        <br>{{ key }}
+        <br>{{ val }}
+    {% endfor %}
+    <hr>
+{% endfor %}
+    <hr>
+    {{ results.bar.div | safe}}
+    {{ results.bar.script | safe }}
+<hr>
+{{ results.hist.div | safe }}
+{{ results.hist.script | safe }}
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.js"></script>
+<script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.js"></script>
 </body>
+
 </html>

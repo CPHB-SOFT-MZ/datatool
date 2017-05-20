@@ -13,17 +13,40 @@
 </ul>
 <form action="{% url "analyze-data" %}" method="POST">
 {% csrf_token %}
-    <label>Max</label>
-    <input type="checkbox" value="{{ functions }}" name="functions"><br>
+    <label>Maximum value</label>
+    <input type="checkbox" value="{{ functions.amax }}" name="functions"><br>
     {% for header in headers %}
         <label for="">{{ header }}</label>
-        <input type="checkbox" value="{{header}}" name="{{ functions }}_headers"><br>
+        <input type="checkbox" value="{{header}}" name="{{ functions.amax }}_headers"><br>
     {% endfor %}
 <br>
     {% for header in headers %}
         <label for="">{{ header }}</label>
-        <input type="checkbox" value="{{header}}" name="info_headers"><br>
+        <input type="checkbox" value="{{header}}" name="{{ functions.amax }}_info_headers"><br>
     {% endfor %}
+<hr>
+
+<label>Bar chart</label>
+
+<input type="checkbox" value="{{ functions.bar }}" name="functions">
+{% for header in headers %}
+    <label>{{ header }}</label>
+    <input type="radio" value="{{ header }}" name="{{ functions.bar }}_header">
+{% endfor %}
+
+<hr>
+
+<label>Histogram</label>
+
+<input type="checkbox" value="{{ functions.hist }}" name="functions">
+{% for header in headers %}
+    <label>{{ header }}</label>
+    <input type="radio" value="{{ header }}" name="{{ functions.hist }}_label">
+{% endfor %}
+{% for header in headers %}
+    <label>{{ header }}</label>
+    <input type="radio" value="{{ header }}" name="{{ functions.hist }}_value">
+{% endfor %}
     {{ form.errors }}
     {{ form.non_field_errors }}
 <input type="submit" value="Submit" />

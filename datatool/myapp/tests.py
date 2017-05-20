@@ -1,6 +1,10 @@
+from queue import Queue
+
+from bokeh.plotting import Figure
 from django.test import TestCase
 from datatool.myapp.analyzetools.tools import Tools
 import pandas as pd
+from bokeh.charts import Chart
 
 
 class ToolsTestCase(TestCase):
@@ -13,10 +17,29 @@ class ToolsTestCase(TestCase):
 
     # Test of maximum_value function to check if we receive the correct data
     def test_maximum_value(self):
+        queue = Queue()
         # Get the two objects with each their max (eq_site_limit and point_longitude)
         # and get the data for policyID, county, and statecode
-        l = self.tools.maximum_value(['eq_site_limit', 'point_longitude'], ['policyID', 'county', 'statecode'])
+        self.tools.maximum_value(queue, ['eq_site_limit', 'point_longitude'], ['policyID', 'county', 'statecode'])
 
+        maxi = queue.get()
         # Check if the policyID retrieved in the objects are correct
-        self.assertEqual(l[0].policyID, 340585)
-        self.assertEqual(l[1].policyID, 154795)
+        print(maxi[1])
+        self.assertEqual(maxi[1][0].info_headers['policyID'], 340585)
+        self.assertEqual(maxi[1][1].info_headers['policyID'], 154795)
+
+    def test_bar_chart(self):
+        queue = Queue()
+        self.tools.bar_chart(queue, "county")
+        self.assertIsInstance(queue.get()[1], Chart)
+
+    def test_histogram(self):
+        queue = Queue()
+        self.tools.histogram(queue, value_header="point_granularity")
+        self.tools.histogram(queue, value_header="point_granularity", label_header="county")
+        hist1 = queue.get()
+        hist2 = queue.get()
+        self.assertIsInstance(hist1[1], Chart)
+        self.assertIsInstance(hist2[1], Chart)
+        self.assertEqual(hist1[0], "hist")
+        self.assertEqual(hist1[0], "hist")

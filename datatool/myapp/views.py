@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 import os
-
+from threading import Thread
+from bokeh.embed import components
 from django.shortcuts import render
-from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect, render_to_response
+from queue import Queue
+
 from datatool.myapp.models import Document
 from datatool.myapp.forms import DocumentForm
 from datatool.myapp.analyzetools.tools import Tools
 import pandas as pd
 
+
 tool = Tools()
+
 
 # This is actually our index
 # TODO: Rename to index so we can make it look nicer. Or at least redirect to this view on the index
@@ -45,6 +48,7 @@ def list(request):
         {'documents': documents, 'form': form}
     )
 
+
 # Deletes a file when the delete link is clicked on the index page
 # TODO: Make it work so it also removes the file in the dir
 def remove(request, file_name):
@@ -63,6 +67,7 @@ def remove(request, file_name):
 
         return HttpResponseRedirect(reverse('list'))
 
+
 def analyze(request):
     if request.method == 'GET':
 
@@ -79,35 +84,76 @@ def analyze(request):
             headers = csv.axes[1]
 
         # TODO: Give a list of functions instead of just AMAX
+        functions = {
+            'amax': 'AMAX',
+            'bar': 'BAR',
+            'hist': 'HIST'
+        }
         return render(
             request,
             'analyze.html',
             {
-                'functions': 'AMAX',
+                'functions': functions,
                 'headers': headers
             }
         )
 
+
 # This method is called when the form is submitted and will take care of analyzing the data
 def analyze_data(request):
     if request.method == 'POST':
+        chart_queue = Queue()
+        res_queue = Queue()
+        results = {}
+        err_messages = {}
+        threads = []
 
+        def put_result(result):
+            results.update({result[0]: result[1]})
+        def put_chart(result):
+            script, div = components(result[1])
+
+            results.update({result[0]: {
+                'script': script,
+                'div': div
+            }})
+            print("Done with ", result[0])
         # For every function we have checked in our form
-        for function in request.POST.getlist('functions'):
+        for func in request.POST.getlist('functions'):
 
             # TODO: Implement the rest of the ifs
             # TODO: Add all results, or a representation of the results to a list collecting everything for our template
-            if function == "AMAX":
-                print(tool.maximum_value(request.POST.getlist('AMAX_headers'), request.POST.getlist('info_headers')))
-            if function == "FUNCTION2":
-                print("Do something else")
+            if func == "AMAX":
+                amax_thread = Thread(target=tool.maximum_value, args=(res_queue, request.POST.getlist('AMAX_headers'),
+                                               request.POST.getlist('AMAX_info_headers')))
 
-        # TODO: Render the data.html template with every calculated data as well as graphs. Maybe in a list of objects?
+                threads.append(amax_thread)
+                amax_thread.start()
+
+            elif func == "BAR":
+                # Get the Chart object from our tool and convert it to the required components to show in the template
+                bar_thread = Thread(target=tool.bar_chart, args=(chart_queue, request.POST['BAR_header']))
+                threads.append(bar_thread)
+                bar_thread.start()
+
+            elif func == "HIST":
+                hist_thread = Thread(target=tool.histogram, args=(chart_queue, request.POST['HIST_label'], request.POST['HIST_value']))
+                threads.append(hist_thread)
+                hist_thread.start()
+
+        for th in threads:
+            th.join()
+        while not chart_queue.empty():
+            put_chart(chart_queue.get())
+        while not res_queue.empty():
+            put_result(res_queue.get())
+
         return render(
             request,
-            'analyze.html',
+            'data.html',
             {
-                'selected': request.POST.getlist('AMAX_headers')
+                'results' : results,
+                'errors': err_messages
             }
         )
 
