@@ -12,14 +12,12 @@ from datatool.myapp.forms import DocumentForm
 from datatool.myapp.analyzetools.tools import Tools
 import pandas as pd
 
-
 tool = Tools()
 
 
 # This is actually our index
 # TODO: Rename to index so we can make it look nicer. Or at least redirect to this view on the index
 def list(request):
-
     # Handle file upload (if form is submitted)
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
@@ -83,14 +81,17 @@ def analyze(request):
             tool.set_csv(csv)
             headers = csv.axes[1]
 
-        # TODO: Give a list of functions instead of just AMAX
         functions = {
             'amax': 'AMAX',
             'bar': 'BAR',
             'hist': 'HIST',
             'amin': 'AMIN',
-            'med': 'MED'
+            'med_for': 'MED_FOR',
+            'avg': 'AVG',
+            'avg_for': 'AVG_FOR',
+            'sum': 'SUM'
         }
+
         return render(
             request,
             'analyze.html',
@@ -121,14 +122,14 @@ def analyze_data(request):
                 'div': div
             }})
             print("Done with ", result[0])
+
         # For every function we have checked in our form
         for func in request.POST.getlist('functions'):
 
             # TODO: Implement the rest of the ifs
-            # TODO: Add all results, or a representation of the results to a list collecting everything for our template
             if func == "AMAX":
                 amax_thread = Thread(target=tool.maximum_value, args=(res_queue, request.POST.getlist('AMAX_headers'),
-                                               request.POST.getlist('AMAX_info_headers')))
+                                                                      request.POST.getlist('AMAX_info_headers')))
 
                 threads.append(amax_thread)
                 amax_thread.start()
@@ -140,7 +141,8 @@ def analyze_data(request):
                 bar_thread.start()
 
             elif func == "HIST":
-                hist_thread = Thread(target=tool.histogram, args=(chart_queue, request.POST['HIST_label'], request.POST['HIST_value']))
+                hist_thread = Thread(target=tool.histogram,
+                                     args=(chart_queue, request.POST['HIST_label'], request.POST['HIST_value']))
                 threads.append(hist_thread)
                 hist_thread.start()
 
@@ -149,11 +151,28 @@ def analyze_data(request):
                                                                       request.POST.getlist('AMIN_info_headers')))
                 threads.append(amin_thread)
                 amin_thread.start()
-            elif func == "MED":
-                med_thread = Thread(target=tool.median_value_for, args=(res_queue, request.POST.getlist('MED_headers'),
-                                                                        request.POST['MED_group_by']))
+            elif func == "MED_FOR":
+                print(request.POST.getlist('MED_FOR_headers'))
+                print(request.POST['MED_FOR_group_by'])
+                med_thread = Thread(target=tool.median_value_for,
+                                    args=(res_queue, request.POST.getlist('MED_FOR_headers'),
+                                          request.POST['MED_FOR_group_by']))
                 threads.append(med_thread)
                 med_thread.start()
+            elif func == "AVG":
+                avg_th = Thread(target=tool.average_value, args=(res_queue, request.POST.getlist('AVG_headers')))
+                threads.append(avg_th)
+                avg_th.start()
+            elif func == "AVG_FOR":
+                avg_thread = Thread(target=tool.average_value_for,
+                                    args=(res_queue, request.POST.getlist('AVG_FOR_headers'),
+                                          request.POST['AVG_FOR_group_by']))
+                threads.append(avg_thread)
+                avg_thread.start()
+            elif func == "SUM":
+                sum_thread = Thread(target=tool.sum, args=(res_queue, request.POST.getlist('SUM_headers')))
+                threads.append(sum_thread)
+                sum_thread.start()
 
         for th in threads:
             th.join()
@@ -166,8 +185,7 @@ def analyze_data(request):
             request,
             'data.html',
             {
-                'results' : results,
+                'results': results,
                 'errors': err_messages
             }
         )
-

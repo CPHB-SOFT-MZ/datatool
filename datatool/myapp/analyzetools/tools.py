@@ -6,7 +6,6 @@ from datatool.myapp.analyzetools.customObjects import DataContainer
 
 
 class Tools:
-
     def __init__(self):
         self.csv = pd.DataFrame()
 
@@ -46,7 +45,9 @@ class Tools:
     def histogram(self, q, value_header, label_header=None):
         print("Generating histogram")
         if label_header is not None:
-            q.put(('hist', Histogram(self.csv, label=label_header, values=value_header, title=value_header, plot_width=800, legend=False)))
+            q.put(('hist',
+                   Histogram(self.csv, label=label_header, values=value_header, title=value_header, plot_width=800,
+                             legend=False)))
         else:
             q.put(('hist', Histogram(self.csv, values=value_header, title=value_header, plot_width=800, legend=False)))
 
@@ -55,17 +56,17 @@ class Tools:
         print("Generating min value")
         df_return = []
 
-        #For each column of values we want the minimum of
+        # For each column of values we want the minimum of
         for value_header in value_headers:
             res_min = DataContainer()
 
             # narrow down the csv dataframe
             df = self.csv[info_headers + [value_header]]
 
-            #returns a dataframe (only one row) of the index of what np.argmin returns
+            # returns a dataframe (only one row) of the index of what np.argmin returns
             value_pairs = df.ix[np.argmin(np.array(self.csv[value_header]))]
 
-            #Add these headers to the res_min object
+            # Add these headers to the res_min object
             res_min.value_headers = {value_header: value_pairs[value_header]}
 
             # Get all the info for that one row that was requested and append it to
@@ -104,7 +105,7 @@ class Tools:
                 res_med.append_value_header(value_header, avg)
             df_return.append(res_med)
 
-        q.put(('median_for', df_return))
+        q.put(('med_for', df_return))
 
     # TODO: Needs to be rewritten after a test has been written and run
     def average_value(self, q, value_headers):
@@ -131,14 +132,12 @@ class Tools:
                 # Though only for the uniques
                 data = csv[(csv[group_by] == unique)][[value_header] + [group_by]]
 
-                #Calculate the average of the column of our value_header
+                # Calculate the average of the column of our value_header
                 avg = np.nanmean(data[value_header])
                 res_avg.append_value_header(value_header, avg)
             df_return.append(res_avg)
         # Put our result into our queue
         q.put(('avg_for', df_return))
-
-
 
     def sum(self, q, value_headers):
         values = []

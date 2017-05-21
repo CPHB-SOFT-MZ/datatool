@@ -3,84 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <title>WAZZUP??</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <body>
-<h1>Upload complete</h1>
-<ul>
-    {% for header in selected %}
-        <li>{{ header }}</li>
-    {% endfor %}
-</ul>
-<form action="{% url "analyze-data" %}" method="POST">
-{% csrf_token %}
-    <label>Maximum value</label>
-    <input type="checkbox" value="{{ functions.amax }}" name="functions"><br>
-    <label>Value headers</label>
-    {% for header in headers %}
-        <label for="">{{ header }}</label>
-        <input type="checkbox" value="{{header}}" name="{{ functions.amax }}_headers"><br>
-    {% endfor %}
-<br>
-    <label>Info headers</label>
-    {% for header in headers %}
-        <label for="">{{ header }}</label>
-        <input type="checkbox" value="{{header}}" name="{{ functions.amax }}_info_headers"><br>
-    {% endfor %}
-<hr>
-    <label>Minimum value</label>
-    <input type="checkbox" value="{{ functions.amin }}" name="functions"><br>
-    <label>Value headers</label>
-    {% for header in headers %}
-        <label for="">{{ header }}</label>
-        <input type="checkbox" value="{{header}}" name="{{ functions.amin }}_headers"><br>
-    {% endfor %}
-<br>
-    <label>Info headers</label>
-    {% for header in headers %}
-        <label for="">{{ header }}</label>
-        <input type="checkbox" value="{{header}}" name="{{ functions.amin }}_info_headers"><br>
-    {% endfor %}
-<hr>
-    <label>Median</label><br>
-    <input type="checkbox" value="{{ functions.med }}" name="functions"><br>
-    <label>Value headers</label>
-    {% for header in headers %}
-        <label for="">{{ header }}</label>
-        <input type="checkbox" value="{{header}}" name="{{ functions.med }}_headers"><br>
-    {% endfor %}
-<br>
-    <label>Group by</label>
-    {% for header in headers %}
-        <label for="">{{ header }}</label>
-        <input type="radio" value="{{header}}" name="{{ functions.med }}_group_by"><br>
-    {% endfor %}
-<hr>
-<label>Bar chart</label>
 
-<input type="checkbox" value="{{ functions.bar }}" name="functions">
-{% for header in headers %}
-    <label>{{ header }}</label>
-    <input type="radio" value="{{ header }}" name="{{ functions.bar }}_header">
-{% endfor %}
+<div class="container">
+    <form action="{% url "analyze-data" %}" method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <h4>
+                        <label>
+                            Sum
+                            <input type="checkbox" value="{{ functions.sum }}" name="functions">
 
-<hr>
+                        </label>
+                    </h4>
+                    <label>Sum for...</label><br>
+                    {% for header in headers %}
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="{{ header }}" name="{{ functions.sum }}_headers">
+                                {{ header }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
 
-<label>Histogram</label>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4>
+                                <label>Maximum value
+                                    <input type="checkbox" value="{{ functions.amax }}" name="functions">
+                                </label>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label>Value headers</label><br>
+                            {% for header in headers %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="{{ header }}" name="{{ functions.amax }}_headers">
+                                        {{ header }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Info headers</label><br>
+                            {% for header in headers %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="{{ header }}"
+                                               name="{{ functions.amax }}_info_headers">
+                                        {{ header }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <label>Minimum value</label>
+        <input type="checkbox" value="{{ functions.amin }}" name="functions"><br>
+        <label>Value headers</label>
+        {% for header in headers %}
+            <label for="">{{ header }}</label>
+            <input type="checkbox" value="{{ header }}" name="{{ functions.amin }}_headers"><br>
+        {% endfor %}
+        <br>
+        <label>Info headers</label>
+        {% for header in headers %}
+            <label for="">{{ header }}</label>
+            <input type="checkbox" value="{{ header }}" name="{{ functions.amin }}_info_headers"><br>
+        {% endfor %}
+        <hr>
+        <label>Median</label>
+        <input type="checkbox" value="{{ functions.med_for }}" name="functions"><br>
+        <label>Value headers</label><br>
+        {% for header in headers %}
+            <label for="">{{ header }}</label>
+            <input type="checkbox" value="{{ header }}" name="{{ functions.med_for }}_headers"><br>
+        {% endfor %}
+        <br>
+        <label>Group by</label><br>
+        {% for header in headers %}
+            <label for="">{{ header }}</label>
+            <input type="radio" value="{{ header }}" name="{{ functions.med_for }}_group_by"><br>
+        {% endfor %}
+        <hr>
 
-<input type="checkbox" value="{{ functions.hist }}" name="functions">
-{% for header in headers %}
-    <label>{{ header }}</label>
-    <input type="radio" value="{{ header }}" name="{{ functions.hist }}_label">
-{% endfor %}
-{% for header in headers %}
-    <label>{{ header }}</label>
-    <input type="radio" value="{{ header }}" name="{{ functions.hist }}_value">
-{% endfor %}
-    {{ form.errors }}
-    {{ form.non_field_errors }}
-<input type="submit" value="Submit" />
-</form>
+        <label>Average for</label>
+        <input type="checkbox" value="{{ functions.avg_for }}" name="functions"><br>
+        <label>Value headers</label><br>
+        {% for header in headers %}
+            <label for="">{{ header }}</label>
+            <input type="checkbox" value="{{ header }}" name="{{ functions.avg_for }}_headers"><br>
+        {% endfor %}
+        <br>
+        <label>Group by</label><br>
+        {% for header in headers %}
+            <label for="">{{ header }}</label>
+            <input type="radio" value="{{ header }}" name="{{ functions.avg_for }}_group_by"><br>
+        {% endfor %}
+        <hr>
 
+        <label>Average total</label>
+        <input type="checkbox" value="{{ functions.avg }}" name="functions"><br>
+        <label>Value headers</label><br>
+        {% for header in headers %}
+            <label for="">{{ header }}</label>
+            <input type="checkbox" value="{{ header }}" name="{{ functions.avg }}_headers"><br>
+        {% endfor %}
+        <br>
+        <hr>
 
+        <label>Bar chart</label>
+
+        <input type="checkbox" value="{{ functions.bar }}" name="functions">
+        {% for header in headers %}
+            <label>{{ header }}</label>
+            <input type="radio" value="{{ header }}" name="{{ functions.bar }}_header">
+        {% endfor %}
+
+        <hr>
+
+        <label>Histogram</label>
+
+        <input type="checkbox" value="{{ functions.hist }}" name="functions">
+        {% for header in headers %}
+            <label>{{ header }}</label>
+            <input type="radio" value="{{ header }}" name="{{ functions.hist }}_label">
+        {% endfor %}
+        {% for header in headers %}
+            <label>{{ header }}</label>
+            <input type="radio" value="{{ header }}" name="{{ functions.hist }}_value">
+        {% endfor %}
+        {{ form.errors }}
+        {{ form.non_field_errors }}
+        <input type="submit" value="Submit"/>
+    </form>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</div>
 </body>
 </html>

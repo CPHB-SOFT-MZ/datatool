@@ -8,7 +8,6 @@ from bokeh.charts import Chart
 
 
 class ToolsTestCase(TestCase):
-
     # Instantiate the Tools class and give it a CSV file we can work on
     def setUp(self):
         self.tools = Tools()
