@@ -15,11 +15,13 @@
 {% csrf_token %}
     <label>Maximum value</label>
     <input type="checkbox" value="{{ functions.amax }}" name="functions"><br>
+    <label>Value headers</label>
     {% for header in headers %}
         <label for="">{{ header }}</label>
         <input type="checkbox" value="{{header}}" name="{{ functions.amax }}_headers"><br>
     {% endfor %}
 <br>
+    <label>Info headers</label>
     {% for header in headers %}
         <label for="">{{ header }}</label>
         <input type="checkbox" value="{{header}}" name="{{ functions.amax }}_info_headers"><br>

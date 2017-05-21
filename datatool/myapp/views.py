@@ -142,6 +142,12 @@ def analyze_data(request):
                 threads.append(hist_thread)
                 hist_thread.start()
 
+            elif func == "AMIN":
+                amin_thread = Thread(target=tool.minimum_value, args=(res_queue, request.POST.getlist('AMIN_headers'),
+                                                                      request.POST.getlist('AMIN_info_headers')))
+                threads.append(amin_thread)
+                amin_thread.start()
+
         for th in threads:
             th.join()
         while not chart_queue.empty():

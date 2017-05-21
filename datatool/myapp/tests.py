@@ -24,7 +24,6 @@ class ToolsTestCase(TestCase):
 
         maxi = queue.get()
         # Check if the policyID retrieved in the objects are correct
-        print(maxi[1])
         self.assertEqual(maxi[1][0].info_headers['policyID'], 340585)
         self.assertEqual(maxi[1][1].info_headers['policyID'], 154795)
 
@@ -50,3 +49,29 @@ class ToolsTestCase(TestCase):
         occ = queue.get()
         self.assertEqual(occ[1][1].info_headers['FL'], 36634)
         self.assertEqual(occ[1][0].info_headers['DUVAL COUNTY'], 1894)
+
+    def test_sum(self):
+        queue = Queue()
+        self.tools.sum(queue, {"tiv_2011"})
+        ss = queue.get()
+        self.assertEqual(ss[1][0].value_headers, {'tiv_2011': 79601102761.830002})
+
+    def test_average_values(self):
+        queue = Queue()
+        self.tools.average_value(queue, ['tiv_2011'])
+        ss = queue.get()
+        self.assertEqual(ss[1][0].value_headers, {'tiv_2011': 2172875.000322924})
+
+    def test_average_values_for(self):
+        queue = Queue()
+        self.tools.average_value_for(queue, ['tiv_2011', 'tiv_2012'], "county")
+        ss = queue.get()
+        print(ss[1][0].info_headers)
+        print(ss[1][0].value_headers)
+        self.assertEqual(ss[1][0].value_headers, {'tiv_2011': 847914.22266187065, 'tiv_2012': 1021623.7854573485})
+
+    def test_median_values(self):
+        queue = Queue()
+        self.tools.median_value_for(queue, ['tiv_2011'], "county")
+        med = queue.get()
+        self.assertEqual(med[1][0].value_headers, {'tiv_2011': 60795.0})
