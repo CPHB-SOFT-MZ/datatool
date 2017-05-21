@@ -27,7 +27,34 @@
         <input type="checkbox" value="{{header}}" name="{{ functions.amax }}_info_headers"><br>
     {% endfor %}
 <hr>
-
+    <label>Minimum value</label>
+    <input type="checkbox" value="{{ functions.amin }}" name="functions"><br>
+    <label>Value headers</label>
+    {% for header in headers %}
+        <label for="">{{ header }}</label>
+        <input type="checkbox" value="{{header}}" name="{{ functions.amin }}_headers"><br>
+    {% endfor %}
+<br>
+    <label>Info headers</label>
+    {% for header in headers %}
+        <label for="">{{ header }}</label>
+        <input type="checkbox" value="{{header}}" name="{{ functions.amin }}_info_headers"><br>
+    {% endfor %}
+<hr>
+    <label>Median</label><br>
+    <input type="checkbox" value="{{ functions.med }}" name="functions"><br>
+    <label>Value headers</label>
+    {% for header in headers %}
+        <label for="">{{ header }}</label>
+        <input type="checkbox" value="{{header}}" name="{{ functions.med }}_headers"><br>
+    {% endfor %}
+<br>
+    <label>Group by</label>
+    {% for header in headers %}
+        <label for="">{{ header }}</label>
+        <input type="radio" value="{{header}}" name="{{ functions.med }}_group_by"><br>
+    {% endfor %}
+<hr>
 <label>Bar chart</label>
 
 <input type="checkbox" value="{{ functions.bar }}" name="functions">

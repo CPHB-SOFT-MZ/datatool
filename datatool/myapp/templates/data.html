@@ -15,7 +15,7 @@
 <body>
 <h3>Amax info</h3>
 {% for obj in results.amax %}
-    {% for key, val in obj.value_header.items %}
+    {% for key, val in obj.value_headers.items %}
         <br>{{ key }}
         <br>{{ val }}
     {% endfor %}
@@ -26,6 +26,30 @@
     <hr>
 {% endfor %}
     <hr>
+<h3>Amin info</h3>
+{% for obj in results.amin %}
+    {% for key, val in obj.value_headers.items %}
+        <br>{{ key }}
+        <br>{{ val }}
+    {% endfor %}
+    {% for key, val in obj.info_headers.items %}
+        <br>{{ key }}
+        <br>{{ val }}
+    {% endfor %}
+    <hr>
+{% endfor %}
+<h3>Median info</h3>
+{% for obj in results.median_for %}
+    {% for key, val in obj.value_headers.items %}
+        <br>{{ key }}
+        <br>{{ val }}
+    {% endfor %}
+    {% for key, val in obj.info_headers.items %}
+        <br>{{ key }}
+        <br>{{ val }}
+    {% endfor %}
+    <hr>
+{% endfor %}
     {{ results.bar.div | safe}}
     {{ results.bar.script | safe }}
 <hr>

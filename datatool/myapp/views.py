@@ -87,7 +87,9 @@ def analyze(request):
         functions = {
             'amax': 'AMAX',
             'bar': 'BAR',
-            'hist': 'HIST'
+            'hist': 'HIST',
+            'amin': 'AMIN',
+            'med': 'MED'
         }
         return render(
             request,
@@ -147,6 +149,11 @@ def analyze_data(request):
                                                                       request.POST.getlist('AMIN_info_headers')))
                 threads.append(amin_thread)
                 amin_thread.start()
+            elif func == "MED":
+                med_thread = Thread(target=tool.median_value_for, args=(res_queue, request.POST.getlist('MED_headers'),
+                                                                        request.POST['MED_group_by']))
+                threads.append(med_thread)
+                med_thread.start()
 
         for th in threads:
             th.join()
