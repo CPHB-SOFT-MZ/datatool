@@ -22,11 +22,11 @@
                         </label>
                     </h4>
                     <label>Sum for...</label><br>
-                    {% for header in headers %}
+                    {% for group in groups.numbers %}
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" value="{{ header }}" name="{{ functions.sum }}_headers">
-                                {{ header }}
+                                <input type="checkbox" value="{{ group }}" name="{{ functions.sum }}_headers">
+                                {{ group }}
                             </label>
                         </div>
                     {% endfor %}
@@ -34,6 +34,29 @@
             </div>
         </div>
         <hr>
+    <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <h4>
+                        <label>
+                            Occurances
+                            <input type="checkbox" value="{{ functions.occur }}" name="functions">
+
+                        </label>
+                    </h4>
+                    <label>Occurances for...</label><br>
+                    {% for header in headers %}
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="{{ header }}" name="{{ functions.occur }}_headers">
+                                {{ header }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    <hr>
         <div class="row">
             <div class="col-sm-12">
                 <div class="form-group">
@@ -49,11 +72,11 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <label>Value headers</label><br>
-                            {% for header in headers %}
+                            {% for group in groups.numbers %}
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" value="{{ header }}" name="{{ functions.amax }}_headers">
-                                        {{ header }}
+                                        <input type="checkbox" value="{{ group }}" name="{{ functions.amax }}_headers">
+                                        {{ group }}
                                     </label>
                                 </div>
                             {% endfor %}
@@ -90,11 +113,11 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <label>Value headers</label>
-                            {% for header in headers %}
+                            {% for group in groups.numbers %}
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" value="{{ header }}" name="{{ functions.amin }}_headers">
-                                        {{ header }}
+                                        <input type="checkbox" value="{{ group }}" name="{{ functions.amin }}_headers">
+                                        {{ group }}
                                     </label>
                                 </div>
                             {% endfor %}
@@ -131,12 +154,12 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <label>Value headers</label>
-                            {% for header in headers %}
+                            {% for group in groups.numbers %}
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" value="{{ header }}"
+                                        <input type="checkbox" value="{{ group }}"
                                                name="{{ functions.med_for }}_headers">
-                                        {{ header }}
+                                        {{ group }}
                                     </label>
                                 </div>
                             {% endfor %}
@@ -173,12 +196,12 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <label>Value headers</label><br>
-                            {% for header in headers %}
+                            {% for group in groups.numbers %}
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" value="{{ header }}"
+                                        <input type="checkbox" value="{{ group }}"
                                                name="{{ functions.avg_for }}_headers">
-                                        {{ header }}
+                                        {{ group }}
                                     </label>
                                 </div>
                             {% endfor %}
@@ -214,11 +237,11 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <label>Value headers</label><br>
-                            {% for header in headers %}
+                            {% for group in groups.numbers %}
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" value="{{ header }}" name="{{ functions.avg }}_headers">
-                                        {{ header }}
+                                        <input type="checkbox" value="{{ group }}" name="{{ functions.avg }}_headers">
+                                        {{ group }}
                                     </label>
                                 </div>
                             {% endfor %}
@@ -244,9 +267,9 @@
                         <div class="col-sm-6">
                         <label>What do you want to compare? (count)</label><br>
                             {% for header in headers %}
-                                <div class="radio">
+                                <div class="checkbox">
                                     <label>
-                                        <input type="radio" value="{{ header }}" name="{{ functions.bar }}_header">
+                                        <input type="checkbox" value="{{ header }}" name="{{ functions.bar }}_headers">
                                         {{ header }}
                                     </label>
                                 </div>
@@ -274,11 +297,11 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-6">
-                            {% for header in headers %}
+                            {% for group in groups.numbers %}
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" value="{{ header }}" name="{{ functions.hist }}_label">
-                                        {{ header }}
+                                        <input type="radio" value="{{ group }}" name="{{ functions.hist }}_label">
+                                        {{ group }}
                                     </label>
                                 </div>
                             {% endfor %}

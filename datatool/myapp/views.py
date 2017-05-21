@@ -74,12 +74,16 @@ def analyze(request):
 
         # Prepare a variable to hold a list of our column headers
         headers = None
-
+        g = {}
         # If the document is a csv file, set the CSV for our tool and load the column headers into the headers variable
         if docname.endswith('.csv'):
             csv = pd.read_csv('media/documents/' + docname)
             tool.set_csv(csv)
             headers = csv.axes[1]
+            g.update({'numbers': csv.select_dtypes(['int64', 'float64']).axes[1]})
+            g.update({'object': csv.select_dtypes(['object']).axes[1]})
+            print(headers)
+            print(g)
 
         functions = {
             'amax': 'AMAX',
@@ -89,7 +93,8 @@ def analyze(request):
             'med_for': 'MED_FOR',
             'avg': 'AVG',
             'avg_for': 'AVG_FOR',
-            'sum': 'SUM'
+            'sum': 'SUM',
+            'occur': 'OCCUR'
         }
 
         return render(
@@ -97,7 +102,8 @@ def analyze(request):
             'analyze.html',
             {
                 'functions': functions,
-                'headers': headers
+                'headers': headers,
+                'groups': g
             }
         )
 
@@ -116,11 +122,10 @@ def analyze_data(request):
 
         def put_chart(result):
             script, div = components(result[1])
+            if results.get(result[0]) is None:
+                results.update({result[0] : []})
+            results.get(result[0]).append({'script': script, 'div': div})
 
-            results.update({result[0]: {
-                'script': script,
-                'div': div
-            }})
             print("Done with ", result[0])
 
         # For every function we have checked in our form
@@ -136,9 +141,11 @@ def analyze_data(request):
 
             elif func == "BAR":
                 # Get the Chart object from our tool and convert it to the required components to show in the template
-                bar_thread = Thread(target=tool.bar_chart, args=(chart_queue, request.POST['BAR_header']))
-                threads.append(bar_thread)
-                bar_thread.start()
+                bar_headers = request.POST.getlist('BAR_headers')
+                for bar_header in bar_headers:
+                    bar_thread = Thread(target=tool.bar_chart, args=(chart_queue, bar_header))
+                    threads.append(bar_thread)
+                    bar_thread.start()
 
             elif func == "HIST":
                 hist_thread = Thread(target=tool.histogram,
@@ -173,6 +180,12 @@ def analyze_data(request):
                 sum_thread = Thread(target=tool.sum, args=(res_queue, request.POST.getlist('SUM_headers')))
                 threads.append(sum_thread)
                 sum_thread.start()
+            elif func == "OCCUR":
+                print('OCCURANCE??')
+                occur_thread = Thread(target=tool.occurences, args=(res_queue,
+                                                                    request.POST.getlist('OCCUR_headers')))
+                threads.append(occur_thread)
+                occur_thread.start()
 
         for th in threads:
             th.join()

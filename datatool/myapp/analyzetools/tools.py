@@ -77,20 +77,6 @@ class Tools:
         q.put(('amin', df_return))
 
     def median_value_for(self, q, value_headers, group_by):
-        # df_return = []
-        # for value_header in value_headers:
-        #     res_medi = DataContainer()
-        #
-        #     df = self.csv[info_headers + [value_header]]
-        #
-        #     values = self.csv[value_header]
-        #     median = np.median(np.array(values))
-        #     value_pairs = df.ix[np.argwhere(median==values)]
-        #     res_medi.value_header = {value_header: value_pairs[value_header]}
-        #     for info_header in info_headers:
-        #         res_medi.append_info_header(info_header, value_pairs[info_header])
-        #     df_return.append(res_medi)
-        # q.put(('median', df_return))
         df_return = []
         csv = self.csv
         uniques = np.unique(self.csv[group_by])
@@ -156,6 +142,8 @@ class Tools:
             info, count = np.unique(array, return_counts=True)
             res = zip(info, count)
             for r in res:
-                res_occ.info_headers.update({r[0]: r[1]})
+                res_occ.append_value_header(r[0], r[1])
+                #res_occ.info_headers.update({r[0]: r[1]})
+            res_occ.info_headers.update({value_header: ""})
             tuple_list.append(res_occ)
         q.put(('occur', tuple_list))

@@ -80,11 +80,25 @@
     {% endfor %}
     <hr>
 {% endfor %}
-{{ results.bar.div | safe }}
-{{ results.bar.script | safe }}
+{% for obj in results.occur %}
+    {% for key, val in obj.info_headers.items %}
+        <br>{{ key }}
+    {% endfor %}
+    {% for key, val in obj.value_headers.items %}
+        <br>{{ key }}
+        <br>{{ val }}
+    {% endfor %}
+    <hr>
+{% endfor %}
+{% for bar in results.bar %}
+    {{ bar.div | safe }}
+    {{ bar.script | safe }}
+{% endfor %}
 <hr>
-{{ results.hist.div | safe }}
-{{ results.hist.script | safe }}
+{% for hist in results.hist %}
+    {{ hist.div | safe }}
+    {{ hist.script | safe }}
+{% endfor %}
 <script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.js"></script>
 <script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
