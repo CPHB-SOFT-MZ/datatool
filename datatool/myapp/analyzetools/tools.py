@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from bokeh.charts import Histogram, Bar
+from bokeh.charts import Histogram, Bar, figure
 
 from datatool.myapp.analyzetools.customObjects import DataContainer
 
@@ -41,6 +41,39 @@ class Tools:
             q.put(('hist', Histogram(self.csv, label=label_header, values=value_header, title=value_header, plot_width=800, legend=False)))
         else:
             q.put(('hist', Histogram(self.csv, values=value_header, title=value_header, plot_width=800, legend=False)))
+
+    def scatter_markers(self, q, x, y, label_header):
+        print("Generating scatter markers")
+        if label_header is not None:
+            p = figure(plot_width=400, plot_height=400)
+            p.circle(x, y, size=20, color="navy", alpha=0.5, label=label_header)
+            q.put(p)
+        else:
+            p = figure(plot_width=400, plot_height=400)
+            p.circle(x, y, size=20, color="navy", alpha=0.5)
+            q.put(p)
+
+    def line_graph(self, q, x, y, label_header):
+        print("Generating line graph")
+        if label_header is not None:
+            p = figure(plot_width=400, plot_height=400, label=label_header)
+            p.line(x, y, line_width=2)
+            q.put(p)
+        else:
+            p = figure(plot_width=400, plot_height=400)
+            p.line(x, y, line_width=2)
+            q.put(p)
+
+    def multiple_lines(self, q, list_of_lists, label_header):
+        print("Generating multiple lines graph")
+        if label_header is not None:
+            p = figure(plot_width=400, plot_height=400, label=label_header)
+            p.multi_line(list_of_lists, line_width=2)
+            q.put(p)
+        else:
+            p = figure(plot_width=400, plot_height=400)
+            p.multi_line(list_of_lists, line_width=2)
+            q.put(p)
 
     # Finds the row with minimum value for each value header and returns the value and all requested info headers
     def minimum_value(self, q, value_headers, info_headers):
