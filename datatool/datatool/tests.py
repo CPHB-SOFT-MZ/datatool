@@ -2,7 +2,7 @@ from queue import Queue
 
 from bokeh.plotting import Figure
 from django.test import TestCase
-from datatool.myapp.analyzetools.tools import Tools
+from datatool.datatool.analyzetools.tools import Tools
 import pandas as pd
 from bokeh.charts import Chart
 

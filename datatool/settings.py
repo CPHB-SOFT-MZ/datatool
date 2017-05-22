@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'datatool.myapp'
+    'datatool.datatool'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -58,7 +58,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'datatool', 'myapp', 'templates')
+            os.path.join(BASE_DIR, 'datatool', 'datatool', 'templates')
         ],
         'APP_DIRS': True,
         'OPTIONS': {

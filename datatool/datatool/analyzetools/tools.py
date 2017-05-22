@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from bokeh.charts import Histogram, Bar
 
-from datatool.myapp.analyzetools.customObjects import DataContainer
+from datatool.datatool.analyzetools.customObjects import DataContainer
 
 
 class Tools:
@@ -39,22 +39,22 @@ class Tools:
 
     def bar_chart(self, q, value_header):
         print("Generating bar chart")
-        bar = Bar(self.csv, label=value_header, title=value_header, plot_width=800, legend=False)
+        bar = Bar(self.csv, label=value_header, title=value_header, plot_width=970, legend=False)
         q.put(('bar', bar))
 
     def bar_chart_sum(self, q, value_header, group_by):
         print("Generating bar char with sum")
-        bar = Bar(self.csv, group_by, values=value_header, legend=False, plot_width=800)
+        bar = Bar(self.csv, group_by, values=value_header, legend=False, plot_width=970)
         q.put(('bar_sum', bar))
 
     def histogram(self, q, value_header, label_header=None):
         print("Generating histogram")
         if label_header is not None:
             q.put(('hist',
-                   Histogram(self.csv, label=label_header, values=value_header, title=value_header, plot_width=800,
+                   Histogram(self.csv, label=label_header, values=value_header, title=value_header, plot_width=970,
                              legend=False)))
         else:
-            q.put(('hist', Histogram(self.csv, values=value_header, title=value_header, plot_width=800, legend=False)))
+            q.put(('hist', Histogram(self.csv, values=value_header, title=value_header, plot_width=970, legend=False)))
 
     # Finds the row with minimum value for each value header and returns the value and all requested info headers
     def minimum_value(self, q, value_headers, info_headers):

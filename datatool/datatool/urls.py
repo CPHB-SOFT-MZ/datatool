@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import url
-from datatool.myapp.views import *
+from datatool.datatool.views import *
 
 urlpatterns = [
     url(r'^list/$', list, name='list'),

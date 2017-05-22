@@ -7,9 +7,9 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from queue import Queue
 
-from datatool.myapp.models import Document
-from datatool.myapp.forms import DocumentForm
-from datatool.myapp.analyzetools.tools import Tools
+from datatool.datatool.models import Document
+from datatool.datatool.forms import DocumentForm
+from datatool.datatool.analyzetools.tools import Tools
 import pandas as pd
 
 tool = Tools()
@@ -52,14 +52,11 @@ def list(request):
 def remove(request, file_name):
     if request.method == 'GET':
         doc = Document.objects.get(file_name=file_name)
-        doc.delete()
         try:
-            print(doc.docfile.url)
-
-            # Of some reason doesn't remove the file from the directory
-            if os.path.isfile(doc.docfile.url):
-                os.remove(doc.docfile.url)
+            if os.path.isfile(doc.docfile.path):
+                os.remove(doc.docfile.path)
                 # elif os.path.isdir(file_path): shutil.rmtree(file_path)
+                doc.delete()
         except Exception as e:
             print(e)
 
