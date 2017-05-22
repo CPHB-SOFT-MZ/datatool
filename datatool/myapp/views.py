@@ -88,6 +88,7 @@ def analyze(request):
         functions = {
             'amax': 'AMAX',
             'bar': 'BAR',
+            'bar_sum': 'BAR_SUM',
             'hist': 'HIST',
             'amin': 'AMIN',
             'med_for': 'MED_FOR',
@@ -147,6 +148,15 @@ def analyze_data(request):
                     threads.append(bar_thread)
                     bar_thread.start()
 
+            elif func == "BAR_SUM":
+                group_header = request.POST['BAR_SUM_group_by']
+                value_header = request.POST['BAR_SUM_header']
+
+                bar_sum_thread = Thread(target=tool.bar_chart_sum,
+                                        args=(chart_queue, value_header, group_header))
+                threads.append(bar_sum_thread)
+                bar_sum_thread.start()
+
             elif func == "HIST":
                 hist_thread = Thread(target=tool.histogram,
                                      args=(chart_queue, request.POST['HIST_label'], request.POST['HIST_value']))
@@ -181,9 +191,8 @@ def analyze_data(request):
                 threads.append(sum_thread)
                 sum_thread.start()
             elif func == "OCCUR":
-                print('OCCURANCE??')
-                occur_thread = Thread(target=tool.occurences, args=(res_queue,
-                                                                    request.POST.getlist('OCCUR_headers')))
+                occur_thread = Thread(target=tool.occurrences, args=(res_queue,
+                                                                     request.POST.getlist('OCCUR_headers')))
                 threads.append(occur_thread)
                 occur_thread.start()
 

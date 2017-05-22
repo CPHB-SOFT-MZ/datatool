@@ -42,6 +42,11 @@ class Tools:
         bar = Bar(self.csv, label=value_header, title=value_header, plot_width=800, legend=False)
         q.put(('bar', bar))
 
+    def bar_chart_sum(self, q, value_header, group_by):
+        print("Generating bar char with sum")
+        bar = Bar(self.csv, group_by, values=value_header, legend=False, plot_width=800)
+        q.put(('bar_sum', bar))
+
     def histogram(self, q, value_header, label_header=None):
         print("Generating histogram")
         if label_header is not None:
@@ -134,7 +139,7 @@ class Tools:
             values.append(res_sum)
         q.put(('sum', values))
 
-    def occurences(self, q, value_headers):
+    def occurrences(self, q, value_headers):
         tuple_list = []
         for value_header in value_headers:
             res_occ = DataContainer()

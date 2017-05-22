@@ -39,12 +39,12 @@
                 <div class="form-group">
                     <h4>
                         <label>
-                            Occurances
+                            Occurrences
                             <input type="checkbox" value="{{ functions.occur }}" name="functions">
 
                         </label>
                     </h4>
-                    <label>Occurances for...</label><br>
+                    <label>Occurrences for...</label><br>
                     {% for header in headers %}
                         <div class="checkbox">
                             <label>
@@ -270,6 +270,49 @@
                                 <div class="checkbox">
                                     <label>
                                         <input type="checkbox" value="{{ header }}" name="{{ functions.bar }}_headers">
+                                        {{ header }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+            <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4>
+                                <label>Bar chart (SUM)
+                                    <input type="checkbox" value="{{ functions.bar_sum }}" name="functions">
+                                </label>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label>Sum of ...</label><br>
+                            {% for group in groups.numbers %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="{{ group }}"
+                                               name="{{ functions.bar_sum }}_header">
+                                        {{ group }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Group by</label><br>
+                            {% for header in headers %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="{{ header }}"
+                                               name="{{ functions.bar_sum }}_group_by">
                                         {{ header }}
                                     </label>
                                 </div>

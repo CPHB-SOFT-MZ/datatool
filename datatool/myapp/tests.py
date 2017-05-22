@@ -31,6 +31,11 @@ class ToolsTestCase(TestCase):
         self.tools.bar_chart(queue, "county")
         self.assertIsInstance(queue.get()[1], Chart)
 
+    def test_bar_chart_sum(self):
+        queue = Queue()
+        self.tools.bar_chart_sum(queue, "tiv_2012", "county")
+        self.assertIsInstance(queue.get()[1], Chart)
+
     def test_histogram(self):
         queue = Queue()
         self.tools.histogram(queue, value_header="point_granularity")
@@ -44,7 +49,7 @@ class ToolsTestCase(TestCase):
 
     def test_occurences(self):
         queue = Queue()
-        self.tools.occurences(queue, ("county", "statecode"))
+        self.tools.occurrences(queue, ("county", "statecode"))
         occ = queue.get()
         self.assertEqual(occ[1][1].info_headers['FL'], 36634)
         self.assertEqual(occ[1][0].info_headers['DUVAL COUNTY'], 1894)
