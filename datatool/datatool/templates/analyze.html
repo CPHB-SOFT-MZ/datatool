@@ -392,6 +392,94 @@
                 </div>
             </div>
         </div>
+        <hr>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4>
+                                <label>Scatter plot
+
+                                    <input type="checkbox" value="{{ functions.scatter }}" name="functions">
+                                </label>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            {% for group in groups.numbers %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="{{ group }}" name="{{ functions.scatter }}_x">
+                                        {{ group }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm-6">
+                            {% for group in groups.numbers %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="{{ group }}" name="{{ functions.scatter }}_y">
+                                        {{ group }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <hr>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4>
+                                <label>Scatter plot (grouped)
+
+                                    <input type="checkbox" value="{{ functions.scatter_group }}" name="functions">
+                                </label>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            {% for group in groups.numbers %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="{{ group }}" name="{{ functions.scatter_group }}_x">
+                                        {{ group }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm-4">
+                            {% for group in groups.numbers %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="{{ group }}" name="{{ functions.scatter_group }}_y">
+                                        {{ group }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm-4">
+                            {% for header in headers %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="{{ header }}" name="{{ functions.scatter_group }}_by">
+                                        {{ header }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         {{ form.errors }}
         {{ form.non_field_errors }}
         <div class="row">

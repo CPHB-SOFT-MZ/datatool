@@ -98,7 +98,9 @@ def analyze(request):
             'avg': 'AVG',
             'avg_for': 'AVG_FOR',
             'sum': 'SUM',
-            'occur': 'OCCUR'
+            'occur': 'OCCUR',
+            'scatter': 'SCATTER',
+            'scatter_group': 'SCATTER_GROUP'
         }
 
         return render(
@@ -214,6 +216,22 @@ def analyze_data(request):
                                                                      request.POST.getlist('OCCUR_headers')))
                 threads.append(occur_thread)
                 occur_thread.start()
+
+            elif func == "SCATTER":
+                scatter_x = request.POST['SCATTER_x']
+                scatter_y = request.POST['SCATTER_y']
+                scatter_thread = Thread(target=tool.scatter_chart, args=(chart_queue, scatter_x, scatter_y))
+                threads.append(scatter_thread)
+                scatter_thread.start()
+
+            elif func == "SCATTER_GROUP":
+                scatter_x = request.POST['SCATTER_GROUP_x']
+                scatter_y = request.POST['SCATTER_GROUP_y']
+                grouped_by = request.POST['SCATTER_GROUP_by']
+                scatter_thread = Thread(target=tool.scatter_chart_grouped,
+                                        args=(chart_queue, scatter_x, scatter_y, grouped_by))
+                threads.append(scatter_thread)
+                scatter_thread.start()
 
         for th in threads:
             th.join()

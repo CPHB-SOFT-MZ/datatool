@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
-from bokeh.charts import Histogram, Bar, Donut
+from bokeh.charts import Histogram, Bar, Donut, Scatter
 from bokeh.plotting import figure
 import matplotlib.pyplot as plt, mpld3
+import random
 
 from datatool.datatool.analyzetools.customObjects import DataContainer
 
@@ -169,16 +170,28 @@ class Tools:
 
         q.put(('donut', mpld3.fig_to_html(fig1)))
 
-    def scatter_markers(self, q, x, y, label_header):
+    def scatter_chart(self, q, x_label, y_label):
         print("Generating scatter markers")
-        if label_header is not None:
-            p = figure(plot_width=400, plot_height=400)
-            p.circle(x, y, size=20, color="navy", alpha=0.5, label=label_header)
-            q.put(p)
-        else:
-            p = figure(plot_width=400, plot_height=400)
-            p.circle(x, y, size=20, color="navy", alpha=0.5)
-            q.put(p)
+        scatter_chart = Scatter(self.csv, x=x_label, y=y_label, title=x_label + " vs " + y_label,
+                    xlabel = x_label, ylabel = y_label)
+        q.put(('scatter', scatter_chart))
+
+    def scatter_chart_grouped(self, q, x_label, y_label, grouped_by):
+        # uniques = np.unique(np.array(self.csv[grouped_by]))
+        #
+        # scatter_chart = figure()
+        # for un in uniques:
+        #
+        #     ccc = self.csv[(self.csv[grouped_by] == un)]
+        #     print(un)
+        #     r = lambda: random.randint(0, 255)
+        #     scatter_chart.scatter(ccc[x_label], ccc[y_label], color='#%02X%02X%02X' % (r(),r(),r()),
+        #                          alpha=0.5, line_color=None, size=10)
+        print("Generating scatter markers")
+        scatter_chart = Scatter(self.csv, x=x_label, y=y_label, color=grouped_by,
+                                title=x_label + " vs " + y_label + " (shaded by " + grouped_by +")" ,
+                                xlabel=x_label, ylabel=y_label)
+        q.put(('scatter_group', scatter_chart))
 
     def line_graph(self, q, x, y, label_header):
         print("Generating line graph")
