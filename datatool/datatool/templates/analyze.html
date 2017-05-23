@@ -324,7 +324,36 @@
         </div>
 
         <hr>
-
+                <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4>
+                                <label>Donut chart (COUNT)
+                                    <input type="checkbox" value="{{ functions.donut }}" name="functions">
+                                </label>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label>Count of...</label><br>
+                            {% for header in headers %}
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="{{ header }}"
+                                               name="{{ functions.donut }}_headers">
+                                        {{ header }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <hr>
         <div class="row">
             <div class="col-sm-12">
                 <div class="form-group">

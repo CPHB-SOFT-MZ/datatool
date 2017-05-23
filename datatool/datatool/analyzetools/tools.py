@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
-from bokeh.charts import Histogram, Bar
+from bokeh.charts import Histogram, Bar, Donut
+from bokeh.plotting import figure
+import matplotlib.pyplot as plt, mpld3
 
 from datatool.datatool.analyzetools.customObjects import DataContainer
 
@@ -148,7 +150,22 @@ class Tools:
             res = zip(info, count)
             for r in res:
                 res_occ.append_value_header(r[0], r[1])
-                #res_occ.info_headers.update({r[0]: r[1]})
             res_occ.info_headers.update({value_header: ""})
             tuple_list.append(res_occ)
         q.put(('occur', tuple_list))
+
+    def donut_chart(self, q, group_by):
+        print("Baking donut...")
+        #donut_chart = Donut(self.csv, label=group_by)
+        #q.put(('donut', donut_chart))
+        labels, counts = np.unique(np.array(self.csv[group_by]), return_counts=True)
+
+        #Calculate the percentages and populate the array
+        percentages = [(count * 100) / np.sum(counts) for count in counts]
+
+        fig1, ax1 = plt.subplots()
+        ax1.pie(percentages, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
+        ax1.axis('equal')
+
+        q.put(('donut', mpld3.fig_to_html(fig1)))
+

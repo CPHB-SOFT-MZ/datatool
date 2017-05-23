@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 import os
+from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
+
+import time
 from bokeh.embed import components
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from queue import Queue
+
+from django.utils.safestring import mark_safe
 
 from datatool.datatool.models import Document
 from datatool.datatool.forms import DocumentForm
@@ -87,6 +92,7 @@ def analyze(request):
             'bar': 'BAR',
             'bar_sum': 'BAR_SUM',
             'hist': 'HIST',
+            'donut': 'DONUT',
             'amin': 'AMIN',
             'med_for': 'MED_FOR',
             'avg': 'AVG',
@@ -111,10 +117,17 @@ def analyze_data(request):
     if request.method == 'POST':
         chart_queue = Queue()
         res_queue = Queue()
+        plb_queue = Queue()
         results = {}
         err_messages = {}
         threads = []
+        #thread_pool = ThreadPoolExecutor(4)
 
+        def put_plb(result):
+            if results.get(result[0]) is None:
+                results.update({result[0] : []})
+            results.get(result[0]).append({'html': mark_safe(result[1])})
+            #results.update({result[0]: mark_safe("<span>Hej</span>")})
         def put_result(result):
             results.update({result[0]: result[1]})
 
@@ -160,6 +173,15 @@ def analyze_data(request):
                 threads.append(hist_thread)
                 hist_thread.start()
 
+            # Of some odd reason multithreading doesn't work with Bokeh's donut call. Might refactor this to matplotlib
+            elif func == "DONUT":
+                donut_headers = request.POST.getlist('DONUT_headers')
+                for donut_header in donut_headers:
+                    tool.donut_chart(plb_queue, donut_header)
+                    #donut_thread = Thread(target=tool.donut_chart, args=(plb_queue, donut_header))
+                    #threads.append(donut_thread)
+                    #donut_thread.start()
+
             elif func == "AMIN":
                 amin_thread = Thread(target=tool.minimum_value, args=(res_queue, request.POST.getlist('AMIN_headers'),
                                                                       request.POST.getlist('AMIN_info_headers')))
@@ -199,6 +221,8 @@ def analyze_data(request):
             put_chart(chart_queue.get())
         while not res_queue.empty():
             put_result(res_queue.get())
+        while not plb_queue.empty():
+            put_plb(plb_queue.get())
 
         return render(
             request,

@@ -8,7 +8,7 @@
         {% if documents %}
             <ul>
                 {% for document in documents %}
-                    <li><a href="{{ document.docfile.url }}">{{ document.docfile.name }}</a><a href="/myapp/remove/{{ document.file_name }}">Delete</a></li>
+                    <li><a href="{{ document.docfile.url }}">{{ document.docfile.name }}</a><a href="/datatool/remove/{{ document.file_name }}">Delete</a></li>
                 {% endfor %}
             </ul>
         {% else %}
