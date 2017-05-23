@@ -2,13 +2,12 @@ from queue import Queue
 
 from bokeh.plotting import Figure
 from django.test import TestCase
-from datatool.myapp.analyzetools.tools import Tools
+from datatool.datatool.analyzetools.tools import Tools
 import pandas as pd
 from bokeh.charts import Chart
 
 
 class ToolsTestCase(TestCase):
-
     # Instantiate the Tools class and give it a CSV file we can work on
     def setUp(self):
         self.tools = Tools()
@@ -24,13 +23,17 @@ class ToolsTestCase(TestCase):
 
         maxi = queue.get()
         # Check if the policyID retrieved in the objects are correct
-        print(maxi[1])
         self.assertEqual(maxi[1][0].info_headers['policyID'], 340585)
         self.assertEqual(maxi[1][1].info_headers['policyID'], 154795)
 
     def test_bar_chart(self):
         queue = Queue()
         self.tools.bar_chart(queue, "county")
+        self.assertIsInstance(queue.get()[1], Chart)
+
+    def test_bar_chart_sum(self):
+        queue = Queue()
+        self.tools.bar_chart_sum(queue, "tiv_2012", "county")
         self.assertIsInstance(queue.get()[1], Chart)
 
     def test_histogram(self):
@@ -46,7 +49,33 @@ class ToolsTestCase(TestCase):
 
     def test_occurences(self):
         queue = Queue()
-        self.tools.occurences(queue, ("county", "statecode"))
+        self.tools.occurrences(queue, ("county", "statecode"))
         occ = queue.get()
         self.assertEqual(occ[1][1].info_headers['FL'], 36634)
         self.assertEqual(occ[1][0].info_headers['DUVAL COUNTY'], 1894)
+
+    def test_sum(self):
+        queue = Queue()
+        self.tools.sum(queue, {"tiv_2011"})
+        ss = queue.get()
+        self.assertEqual(ss[1][0].value_headers, {'tiv_2011': 79601102761.830002})
+
+    def test_average_values(self):
+        queue = Queue()
+        self.tools.average_value(queue, ['tiv_2011'])
+        ss = queue.get()
+        self.assertEqual(ss[1][0].value_headers, {'tiv_2011': 2172875.000322924})
+
+    def test_average_values_for(self):
+        queue = Queue()
+        self.tools.average_value_for(queue, ['tiv_2011', 'tiv_2012'], "county")
+        ss = queue.get()
+        print(ss[1][0].info_headers)
+        print(ss[1][0].value_headers)
+        self.assertEqual(ss[1][0].value_headers, {'tiv_2011': 847914.22266187065, 'tiv_2012': 1021623.7854573485})
+
+    def test_median_values(self):
+        queue = Queue()
+        self.tools.median_value_for(queue, ['tiv_2011'], "county")
+        med = queue.get()
+        self.assertEqual(med[1][0].value_headers, {'tiv_2011': 60795.0})

@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('myapp', '0002_auto_20170510_0715'),
+        ('datatool', '0002_auto_20170510_0715'),
     ]
 
     operations = [
