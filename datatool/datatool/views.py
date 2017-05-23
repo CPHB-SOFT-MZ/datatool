@@ -177,10 +177,10 @@ def analyze_data(request):
             elif func == "DONUT":
                 donut_headers = request.POST.getlist('DONUT_headers')
                 for donut_header in donut_headers:
-                    tool.donut_chart(plb_queue, donut_header)
-                    #donut_thread = Thread(target=tool.donut_chart, args=(plb_queue, donut_header))
-                    #threads.append(donut_thread)
-                    #donut_thread.start()
+                    #tool.donut_chart(plb_queue, donut_header)
+                    donut_thread = Thread(target=tool.donut_chart, args=(plb_queue, donut_header))
+                    threads.append(donut_thread)
+                    donut_thread.start()
 
             elif func == "AMIN":
                 amin_thread = Thread(target=tool.minimum_value, args=(res_queue, request.POST.getlist('AMIN_headers'),
