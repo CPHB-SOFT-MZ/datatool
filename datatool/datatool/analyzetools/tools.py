@@ -50,7 +50,7 @@ def bar_chart_sum(csv, value_header, group_by):
     return 'bar_sum', convert_chart(bar)
 
 
-def histogram(csv, value_header, label_header=None):
+def histogram(csv, value_header, label_header):
     print("Generating histogram")
 
     histo = Histogram(csv, label=label_header, values=value_header, title=value_header, plot_width=970,

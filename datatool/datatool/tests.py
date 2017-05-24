@@ -29,7 +29,7 @@ class ToolsTestCase(TestCase):
         self.assertIsInstance(bar[1]['script'], str)
 
     def test_histogram(self):
-        hist = histogram(value_header="point_granularity", label_header="county")
+        hist = histogram(csv=self.csv, value_header="point_granularity", label_header="county")
 
         self.assertIsInstance(hist[1]['script'], str)
         self.assertEqual(hist[0], "hist")
