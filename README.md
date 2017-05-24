@@ -39,5 +39,5 @@ On some of the forms, you can choose multiple values. If there's only a single c
 
 When you're done choosing what you want, submit the form, and have a bit of patience, and you will get redirected to the result page presenting your data in a nice formatted way.
 
-
-
+![alt text](https://www.dropbox.com/s/wq1hlv4fdxb81an/Screen%20Shot%202017-05-24%20at%2012.25.14.png?dl=1)
+![alt text](https://www.dropbox.com/s/zjgtggbm3v4yxgb/Screen%20Shot%202017-05-24%20at%2012.25.04.png?dl=1)
