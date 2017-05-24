@@ -3,7 +3,6 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 
-import time
 from bokeh.embed import components
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -12,6 +11,7 @@ from queue import Queue
 
 from django.utils.safestring import mark_safe
 
+from datatool.datatool.functionlist import functions
 from datatool.datatool.models import Document
 from datatool.datatool.forms import DocumentForm
 from datatool.datatool.analyzetools.tools import Tools
@@ -87,22 +87,6 @@ def analyze(request):
             print(headers)
             print(g)
 
-        functions = {
-            'amax': 'AMAX',
-            'bar': 'BAR',
-            'bar_sum': 'BAR_SUM',
-            'hist': 'HIST',
-            'donut': 'DONUT',
-            'amin': 'AMIN',
-            'med_for': 'MED_FOR',
-            'avg': 'AVG',
-            'avg_for': 'AVG_FOR',
-            'sum': 'SUM',
-            'occur': 'OCCUR',
-            'scatter': 'SCATTER',
-            'scatter_group': 'SCATTER_GROUP'
-        }
-
         return render(
             request,
             'analyze.html',
@@ -129,7 +113,6 @@ def analyze_data(request):
             if results.get(result[0]) is None:
                 results.update({result[0] : []})
             results.get(result[0]).append({'html': mark_safe(result[1])})
-            #results.update({result[0]: mark_safe("<span>Hej</span>")})
         def put_result(result):
             results.update({result[0]: result[1]})
 
@@ -232,6 +215,23 @@ def analyze_data(request):
                                         args=(chart_queue, scatter_x, scatter_y, grouped_by))
                 threads.append(scatter_thread)
                 scatter_thread.start()
+
+            elif func == "LINE":
+                line_x = request.POST['LINE_x']
+                line_y = request.POST['LINE_y']
+                line_thread = Thread(target=tool.line_graph,
+                                     args=(chart_queue, line_x, line_y))
+                threads.append(line_thread)
+                line_thread.start()
+
+            elif func == "LINE_MULTI":
+                line_x = request.POST['LINE_MULTI_x']
+                line_y = request.POST['LINE_MULTI_y']
+                grouped_by = request.POST['LINE_MULTI_group']
+                line_thread = Thread(target=tool.multiple_lines,
+                                     args=(chart_queue, line_x, line_y, grouped_by))
+                threads.append(line_thread)
+                line_thread.start()
 
         for th in threads:
             th.join()

@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from bokeh.charts import Histogram, Bar, Donut, Scatter
+from bokeh.charts import Histogram, Bar, Donut, Scatter, Line
 from bokeh.plotting import figure
 import matplotlib.pyplot as plt, mpld3
 import random
@@ -177,41 +177,28 @@ class Tools:
         q.put(('scatter', scatter_chart))
 
     def scatter_chart_grouped(self, q, x_label, y_label, grouped_by):
-        # uniques = np.unique(np.array(self.csv[grouped_by]))
-        #
-        # scatter_chart = figure()
-        # for un in uniques:
-        #
-        #     ccc = self.csv[(self.csv[grouped_by] == un)]
-        #     print(un)
-        #     r = lambda: random.randint(0, 255)
-        #     scatter_chart.scatter(ccc[x_label], ccc[y_label], color='#%02X%02X%02X' % (r(),r(),r()),
-        #                          alpha=0.5, line_color=None, size=10)
         print("Generating scatter markers")
         scatter_chart = Scatter(self.csv, x=x_label, y=y_label, color=grouped_by,
                                 title=x_label + " vs " + y_label + " (shaded by " + grouped_by +")" ,
                                 xlabel=x_label, ylabel=y_label)
         q.put(('scatter_group', scatter_chart))
 
-    def line_graph(self, q, x, y, label_header):
+    def line_graph(self, q, x_label, y_label):
         print("Generating line graph")
-        if label_header is not None:
-            p = figure(plot_width=400, plot_height=400, label=label_header)
-            p.line(x, y, line_width=2)
-            q.put(p)
-        else:
-            p = figure(plot_width=400, plot_height=400)
-            p.line(x, y, line_width=2)
-            q.put(p)
+        # if label_header is not None:
+        #     p = figure(plot_width=400, plot_height=400, label=label_header)
+        #     p.line(x, y, line_width=2)
+        #     q.put(p)
+        # else:
+        #     p = figure(plot_width=400, plot_height=400)
+        #     p.line(x, y, line_width=2)
+        #     q.put(('line',p))
 
-    def multiple_lines(self, q, list_of_lists, label_header):
+        line = Line(self.csv, y=y_label, x=x_label)
+        q.put(('line', line))
+
+    def multiple_lines(self, q, x_label, y_label, grouped_by):
         print("Generating multiple lines graph")
-        if label_header is not None:
-            p = figure(plot_width=400, plot_height=400, label=label_header)
-            p.multi_line(list_of_lists, line_width=2)
-            q.put(p)
-        else:
-            p = figure(plot_width=400, plot_height=400)
-            p.multi_line(list_of_lists, line_width=2)
-            q.put(p)
+        line = Line(self.csv, y=y_label, x=x_label, color=grouped_by)
+        q.put(('line_multi', line))
 

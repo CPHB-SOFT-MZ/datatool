@@ -480,6 +480,96 @@
                 </div>
             </div>
         </div>
+            <hr>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4>
+                                <label>Line chart
+
+                                    <input type="checkbox" value="{{ functions.line }}" name="functions">
+                                </label>
+                                <p><b>NOTE:</b> it is expected that the data on the y-coordinate is already summed up in your dataset</p>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            {% for group in groups.numbers %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="{{ group }}" name="{{ functions.line }}_x">
+                                        {{ group }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm-4">
+                            {% for group in groups.numbers %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="{{ group }}" name="{{ functions.line }}_y">
+                                        {{ group }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4>
+                                <label>Line chart multi
+
+                                    <input type="checkbox" value="{{ functions.line_multi }}" name="functions">
+                                </label>
+                                <p><b>NOTE:</b> it is expected that the data on the y-coordinate is already summed up in your dataset</p>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            {% for group in groups.numbers %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="{{ group }}" name="{{ functions.line_multi }}_x">
+                                        {{ group }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm-4">
+                            {% for group in groups.numbers %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="{{ group }}" name="{{ functions.line_multi }}_y">
+                                        {{ group }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm-4">
+                            {% for header in headers %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" value="{{ header }}" name="{{ functions.line_multi }}_group">
+                                        {{ header }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         {{ form.errors }}
         {{ form.non_field_errors }}
         <div class="row">

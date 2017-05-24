@@ -256,6 +256,26 @@
             {% endif %}
         </div>
     </div>
+<div class="row">
+        <div class="col-sm-12">
+            {% if results.line_multi %}
+                {% for line in results.line_multi %}
+                    {{ line.div | safe }}
+                    {{ line.script | safe }}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+<div class="row">
+        <div class="col-sm-12">
+            {% if results.line %}
+                {% for line in results.line %}
+                    {{ line.div | safe }}
+                    {{ line.script | safe }}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
     <script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.js"></script>
     <script src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.5.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
