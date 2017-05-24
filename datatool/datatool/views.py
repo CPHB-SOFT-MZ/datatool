@@ -1,18 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from multiprocessing import Pool, Process, Manager
-from threading import Thread
-
 import time
-from bokeh.embed import components
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from queue import Queue
-
-from django.utils.safestring import mark_safe
-
 from datatool.datatool.functionlist import functions
 from datatool.datatool.models import Document
 from datatool.datatool.forms import DocumentForm
@@ -21,7 +13,6 @@ import pandas as pd
 
 
 # This is actually our index
-# TODO: Rename to index so we can make it look nicer. Or at least redirect to this view on the index
 def list(request):
     # Handle file upload (if form is submitted)
     if request.method == 'POST':
@@ -30,7 +21,6 @@ def list(request):
             newdoc = Document(docfile=request.FILES['docfile'], file_name=request.FILES['docfile'])
 
             # This both saves in our database and our directory
-            # TODO: Check that the comment above is actually valid
             newdoc.save()
 
             # Add the documents filename to the session (This is the one we're working at)
@@ -53,7 +43,6 @@ def list(request):
 
 
 # Deletes a file when the delete link is clicked on the index page
-# TODO: Make it work so it also removes the file in the dir
 def remove(request, file_name):
     if request.method == 'GET':
         doc = Document.objects.get(file_name=file_name)
@@ -129,8 +118,7 @@ def analyze_data(request):
 
         # For every function we have checked in our form
         for func in request.POST.getlist('functions'):
-
-            # TODO: Implement the rest of the ifs
+            
             if func == "AMAX":
                 future = th_ex.submit(maximum_value, csv,
                                         request.POST.getlist('AMAX_headers'),
