@@ -23,7 +23,7 @@ Go to the address of where you started the application. This is by default http:
 You will see a simple upload form where you can upload your CSV file.
 Make sure that your file has no invalid data, as this is currently not handled by the site. 
 We have provided a csv file you can use for testing called FL_insurance_sample.csv, that you can use.
-### PICTURE OF UPLOAD FORM GOES HERE
+![alt text](https://www.dropbox.com/s/1kpaazk0s8nzeo9/Screen%20Shot%202017-05-24%20at%2011.16.10.png?dl=1)
 
 When you've uploaded your CSV file, you will get redirected to the following page:
 ### PICTURE OF ANALYZE FORM GOES HERE
