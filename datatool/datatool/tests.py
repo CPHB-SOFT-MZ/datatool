@@ -1,8 +1,12 @@
 from queue import Queue
+from threading import Thread
 
+import time
 from bokeh.plotting import Figure
 from django.test import TestCase
-from datatool.datatool.analyzetools.tools import Tools
+from multiprocessing import Process, Manager
+
+from datatool.datatool.analyzetools.tools import *
 import pandas as pd
 from bokeh.charts import Chart
 
@@ -10,16 +14,14 @@ from bokeh.charts import Chart
 class ToolsTestCase(TestCase):
     # Instantiate the Tools class and give it a CSV file we can work on
     def setUp(self):
-        self.tools = Tools()
-        csv = pd.read_csv('media/documents/testdocs/FL_insurance_sample.csv')
-        self.tools.set_csv(csv)
+        self.csv = pd.read_csv('media/documents/testdocs/FL_insurance_sample.csv')
 
     # Test of maximum_value function to check if we receive the correct data
     def test_maximum_value(self):
         queue = Queue()
         # Get the two objects with each their max (eq_site_limit and point_longitude)
         # and get the data for policyID, county, and statecode
-        self.tools.maximum_value(queue, ['eq_site_limit', 'point_longitude'], ['policyID', 'county', 'statecode'])
+        maximum_value(queue, ['eq_site_limit', 'point_longitude'], ['policyID', 'county', 'statecode'])
 
         maxi = queue.get()
         # Check if the policyID retrieved in the objects are correct
@@ -27,9 +29,22 @@ class ToolsTestCase(TestCase):
         self.assertEqual(maxi[1][1].info_headers['policyID'], 154795)
 
     def test_bar_chart(self):
-        queue = Queue()
-        self.tools.bar_chart(queue, "county")
-        self.assertIsInstance(queue.get()[1], Chart)
+        manager = Manager()
+        queue = manager.Queue()
+        threads = []
+        start = time.clock()
+        for i in range(3):
+
+        #    self.tools.bar_chart(queue, "county")
+            th = Process(target=bar_chart, args=(self.csv, queue, "county"))
+            th.daemon = True
+            threads.append(th)
+            th.start()
+
+        for thread in threads:
+            thread.join()
+        print(time.clock() - start)
+        #self.assertIsInstance(queue.get()[1], Chart)
 
     def test_bar_chart_sum(self):
         queue = Queue()
