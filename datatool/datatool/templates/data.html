@@ -229,9 +229,10 @@
     </div>
     <div class="row">
         <div class="col-sm-12">
-            {% if results.donut %}
-                {% for donut in results.donut %}
-                    {{ donut.html|safe}}
+            {% if results.pie %}
+                {% for pie in results.pie %}
+                    {{ pie.div|safe}}
+                    {{ pie.script|safe }}
                 {% endfor %}
             {% endif %}
         </div>

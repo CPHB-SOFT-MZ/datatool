@@ -93,6 +93,7 @@ def analyze_data(request):
         res_threads = []
         plb_threads = []
         results = {}
+        # TODO: Was supposed to handle exceptions
         err_messages = {}
         docname = request.session['document']
         csv = pd.DataFrame()
@@ -143,13 +144,16 @@ def analyze_data(request):
                 future = th_ex.submit(histogram, csv, request.POST['HIST_label'], request.POST['HIST_value'])
                 chart_threads.append(future)
 
-            # Of some odd reason multithreading doesn't work with Bokeh's donut call. Might refactor this to matplotlib
-            elif func == "DONUT":
-                donut_headers = request.POST.getlist('DONUT_headers')
-                for donut_header in donut_headers:
-                    future = th_ex.submit(donut_chart, csv, donut_header)
-                    time.sleep(5)
-                    plb_threads.append(future)
+            elif func == "PIE":
+                pie_headers = request.POST.getlist('PIE_headers')
+                for pie_header in pie_headers:
+                    # The following doesn't work, since matplotlib is not thread safe. Using bokeh instead
+                    # future = th_ex.submit(pie_chart, csv, pie_header)
+                    # plb_threads.append(future)
+
+                    # Bokeh implementation for speed optimization
+                    future = th_ex.submit(pie_chart_alternative, csv, pie_header)
+                    chart_threads.append(future)
 
 
             elif func == "AMIN":
@@ -226,6 +230,7 @@ def analyze_data(request):
             'data.html',
             {
                 'results': results,
+                # Exceptions will go here
                 'errors': err_messages
             }
         )

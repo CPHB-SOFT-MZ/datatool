@@ -3,7 +3,7 @@ functions = {
             'bar': 'BAR',
             'bar_sum': 'BAR_SUM',
             'hist': 'HIST',
-            'donut': 'DONUT',
+            'pie': 'PIE',
             'amin': 'AMIN',
             'med_for': 'MED_FOR',
             'avg': 'AVG',

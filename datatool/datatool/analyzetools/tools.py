@@ -156,19 +156,26 @@ def occurrences(csv, value_headers):
         tuple_list.append(res_occ)
     return 'occur', tuple_list
 
+def pie_chart_alternative(csv, group_by):
+    print("Baking pie...")
+    d = Donut(csv, label=group_by)
+    return 'pie', convert_chart(d)
 
-def donut_chart(csv, group_by):
-    print("Baking donut...")
+def pie_chart(csv, group_by):
+    print("Baking pie...")
     labels, counts = np.unique(np.array(csv[group_by]), return_counts=True)
 
     # Calculate the percentages and populate the array
     percentages = [(count * 100) / np.sum(counts) for count in counts]
 
+
     fig1, ax1 = plt.subplots()
+    print("About to return")
     ax1.pie(percentages, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
+
     ax1.axis('equal')
 
-    return 'donut', mpld3.fig_to_html(fig1)
+    return 'pie', mpld3.fig_to_html(fig1)
 
 
 def scatter_chart(csv, x_label, y_label):
