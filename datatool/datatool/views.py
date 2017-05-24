@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 
 from bokeh.embed import components
@@ -21,7 +20,6 @@ tool = Tools()
 
 
 # This is actually our index
-# TODO: Rename to index so we can make it look nicer. Or at least redirect to this view on the index
 def list(request):
     # Handle file upload (if form is submitted)
     if request.method == 'POST':
@@ -30,7 +28,6 @@ def list(request):
             newdoc = Document(docfile=request.FILES['docfile'], file_name=request.FILES['docfile'])
 
             # This both saves in our database and our directory
-            # TODO: Check that the comment above is actually valid
             newdoc.save()
 
             # Add the documents filename to the session (This is the one we're working at)
@@ -53,7 +50,6 @@ def list(request):
 
 
 # Deletes a file when the delete link is clicked on the index page
-# TODO: Make it work so it also removes the file in the dir
 def remove(request, file_name):
     if request.method == 'GET':
         doc = Document.objects.get(file_name=file_name)
@@ -127,7 +123,6 @@ def analyze_data(request):
         # For every function we have checked in our form
         for func in request.POST.getlist('functions'):
 
-            # TODO: Implement the rest of the ifs
             if func == "AMAX":
                 amax_thread = Thread(target=tool.maximum_value, args=(res_queue, request.POST.getlist('AMAX_headers'),
                                                                       request.POST.getlist('AMAX_info_headers')))

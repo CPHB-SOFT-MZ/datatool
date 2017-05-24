@@ -101,7 +101,6 @@ class Tools:
 
         q.put(('med_for', df_return))
 
-    # TODO: Needs to be rewritten after a test has been written and run
     def average_value(self, q, value_headers):
         values = []
         for value_header in value_headers:
@@ -157,8 +156,6 @@ class Tools:
 
     def donut_chart(self, q, group_by):
         print("Baking donut...")
-        #donut_chart = Donut(self.csv, label=group_by)
-        #q.put(('donut', donut_chart))
         labels, counts = np.unique(np.array(self.csv[group_by]), return_counts=True)
 
         #Calculate the percentages and populate the array
