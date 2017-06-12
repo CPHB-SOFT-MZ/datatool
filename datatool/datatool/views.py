@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-import time
+from concurrent.futures import ProcessPoolExecutor
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -49,7 +48,6 @@ def remove(request, file_name):
         try:
             if os.path.isfile(doc.docfile.path):
                 os.remove(doc.docfile.path)
-                # elif os.path.isdir(file_path): shutil.rmtree(file_path)
                 doc.delete()
         except Exception as e:
             print(e)
