@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 from bokeh.charts import Histogram, Bar, Donut, Scatter, Line
 from bokeh.embed import components
@@ -7,6 +6,7 @@ import matplotlib.pyplot as plt, mpld3
 from datatool.datatool.analyzetools.customObjects import DataContainer
 
 
+# Converts a chart to a script and some html
 def convert_chart(result):
     script, div = components(result)
     return {'script': script, 'div': div}
@@ -14,7 +14,7 @@ def convert_chart(result):
 
 # Finds the row with maximum value for each value header and returns the value and all requested info headers
 def maximum_value(csv, value_headers, info_headers):
-    print("Generating max value")
+    print("Finding maximum value...")
     df_return = []
     # For each column of values we want the maximum of
     for value_header in value_headers:
@@ -38,21 +38,23 @@ def maximum_value(csv, value_headers, info_headers):
     return 'amax', df_return
 
 
+# Generates bar chart with occurences
 def bar_chart(csv, value_header):
-    print("Generating bar chart")
+    print("Generating bar chart with occurrences...")
     bar = Bar(csv, label=value_header, title=value_header, plot_width=970, legend=False)
     return 'bar', convert_chart(bar)
 
 
+# Generates bar chart with sums
 def bar_chart_sum(csv, value_header, group_by):
-    print("Generating bar char with sum")
+    print("Generating bar chart with sums...")
     bar = Bar(csv, group_by, values=value_header, legend=False, plot_width=970)
     return 'bar_sum', convert_chart(bar)
 
 
+# Generates histogram
 def histogram(csv, value_header, label_header):
-    print("Generating histogram")
-
+    print("Genrating histogram...")
     histo = Histogram(csv, label=label_header, values=value_header, title=value_header, plot_width=970,
                       legend=False)
     return 'hist', convert_chart(histo)
@@ -60,7 +62,7 @@ def histogram(csv, value_header, label_header):
 
 # Finds the row with minimum value for each value header and returns the value and all requested info headers
 def minimum_value(csv, value_headers, info_headers):
-    print("Generating min value")
+    print("Finding minimum value...")
     df_return = []
 
     # For each column of values we want the minimum of
@@ -84,24 +86,36 @@ def minimum_value(csv, value_headers, info_headers):
     return 'amin', df_return
 
 
+# Finds row with median value for each header and returns the value and all requested info headers
 def median_value_for(csv, value_headers, group_by):
+    print("Finding median value grouped by " + group_by)
     df_return = []
     uniques = np.unique(csv[group_by])
 
-    # For every
+    # For every unique value in the group_by column (Ex. cities)
     for unique in uniques:
         res_med = DataContainer()
+
+        # Update the info_headers in the DataContainer object so we know what data we want from the median
         res_med.info_headers.update({group_by: unique})
+
+        # For every value we want the median for...
         for value_header in value_headers:
+            # Filter/mask only data where group_by column value is equal to the unique
+            # And we only want the value header and the one we're grouping by.
             data = csv[(csv[group_by] == unique)][[value_header] + [group_by]]
-            avg = np.nanmedian(data[value_header])
-            res_med.append_value_header(value_header, avg)
+
+            # Find the median of the value header
+            med = np.nanmedian(data[value_header])
+            res_med.append_value_header(value_header, med)
         df_return.append(res_med)
 
     return 'med_for', df_return
 
 
+# Average value for whole column not grouped
 def average_value(csv, value_headers):
+    print("Calculating average...")
     values = []
     for value_header in value_headers:
         res_avg = DataContainer()
@@ -111,7 +125,9 @@ def average_value(csv, value_headers):
     return 'avg', values
 
 
+# Average value for column grouped by...
 def average_value_for(csv, value_headers, group_by):
+    print("Finding average grouped by " + group_by)
     df_return = []
     uniques = np.unique(csv[group_by])
 
@@ -134,6 +150,7 @@ def average_value_for(csv, value_headers, group_by):
 
 
 def sums(csv, value_headers):
+    print("Calculating sums...")
     values = []
     for value_header in value_headers:
         res_sum = DataContainer()
@@ -144,11 +161,15 @@ def sums(csv, value_headers):
 
 
 def occurrences(csv, value_headers):
+    print("Calculating occurrences...")
     tuple_list = []
     for value_header in value_headers:
         res_occ = DataContainer()
         array = np.array(csv[value_header])
         info, count = np.unique(array, return_counts=True)
+
+        # Creates a list of tuples
+        # zip([1,2,3], [4,5,6]) == [(1,4), (2,5), (3,6)]
         res = zip(info, count)
         for r in res:
             res_occ.append_value_header(r[0], r[1])
@@ -156,19 +177,21 @@ def occurrences(csv, value_headers):
         tuple_list.append(res_occ)
     return 'occur', tuple_list
 
+
+# Generate a pie chart with Bokeh (is currently in use)
 def pie_chart_alternative(csv, group_by):
     print("Baking pie...")
     d = Donut(csv, label=group_by)
     return 'pie', convert_chart(d)
 
+
+# Pie chart with matplotlib (is not currently in use...)
 def pie_chart(csv, group_by):
     print("Baking pie...")
     labels, counts = np.unique(np.array(csv[group_by]), return_counts=True)
 
     # Calculate the percentages and populate the array
     percentages = [(count * 100) / np.sum(counts) for count in counts]
-
-
     fig1, ax1 = plt.subplots()
     print("About to return")
     ax1.pie(percentages, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
@@ -178,6 +201,7 @@ def pie_chart(csv, group_by):
     return 'pie', mpld3.fig_to_html(fig1)
 
 
+# A simple scatter chart (not grouped)
 def scatter_chart(csv, x_label, y_label):
     print("Generating scatter markers")
     scatter_chart = Scatter(csv, x=x_label, y=y_label, title=x_label + " vs " + y_label,
@@ -185,29 +209,23 @@ def scatter_chart(csv, x_label, y_label):
     return 'scatter', convert_chart(scatter_chart)
 
 
+# Scatter chart grouped by something...
 def scatter_chart_grouped(csv, x_label, y_label, grouped_by):
     print("Generating scatter markers")
-    scatter_chart = Scatter(csv, x=x_label, y=y_label, color=grouped_by,
+    scatter_c = Scatter(csv, x=x_label, y=y_label, color=grouped_by,
                             title=x_label + " vs " + y_label + " (shaded by " + grouped_by + ")",
                             xlabel=x_label, ylabel=y_label)
-    return 'scatter_group', convert_chart(scatter_chart)
+    return 'scatter_group', convert_chart(scatter_c)
 
 
+# Single line graph...
 def line_graph(csv, x_label, y_label):
     print("Generating line graph")
-    # if label_header is not None:
-    #     p = figure(plot_width=400, plot_height=400, label=label_header)
-    #     p.line(x, y, line_width=2)
-    #     q.put(p)
-    # else:
-    #     p = figure(plot_width=400, plot_height=400)
-    #     p.line(x, y, line_width=2)
-    #     q.put(('line',p))
-
     line = Line(csv, y=y_label, x=x_label)
     return 'line', convert_chart(line)
 
 
+# Multiple line graphs...
 def multiple_lines(csv, x_label, y_label, grouped_by):
     print("Generating multiple lines graph")
     line = Line(csv, y=y_label, x=x_label, color=grouped_by)

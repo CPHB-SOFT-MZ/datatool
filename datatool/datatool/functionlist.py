@@ -1,3 +1,5 @@
+# This list of functions is what we use to provide our templates and views with the correct names
+
 functions = {
             'amax': 'AMAX',
             'bar': 'BAR',

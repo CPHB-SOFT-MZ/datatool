@@ -1,3 +1,4 @@
+# Wrapper class to wrap data from our tool. This is for non-graph data only
 class DataContainer:
     def __init__(self):
         self.info_headers = {}

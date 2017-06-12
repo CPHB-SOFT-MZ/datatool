@@ -1,8 +1,6 @@
-from queue import Queue
 from django.test import TestCase
 from datatool.datatool.analyzetools.tools import *
 import pandas as pd
-from bokeh.charts import Chart
 
 
 class ToolsTestCase(TestCase):

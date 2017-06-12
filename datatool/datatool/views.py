@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 from concurrent.futures import ProcessPoolExecutor
 from django.shortcuts import render
@@ -11,8 +10,7 @@ from datatool.datatool.analyzetools.tools import *
 import pandas as pd
 
 
-# This is actually our index
-def list(request):
+def index(request):
     # Handle file upload (if form is submitted)
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
@@ -36,7 +34,7 @@ def list(request):
     # Render list page with the documents and the form
     return render(
         request,
-        'list.html',
+        'index.html',
         {'documents': documents, 'form': form}
     )
 
@@ -52,9 +50,9 @@ def remove(request, file_name):
         except Exception as e:
             print(e)
 
-        return HttpResponseRedirect(reverse('list'))
+        return HttpResponseRedirect(reverse('index'))
 
-
+# Shows our form for our analysis
 def analyze(request):
     if request.method == 'GET':
 
@@ -70,8 +68,6 @@ def analyze(request):
             headers = csv.axes[1]
             g.update({'numbers': csv.select_dtypes(['int64', 'float64']).axes[1]})
             g.update({'object': csv.select_dtypes(['object']).axes[1]})
-            print(headers)
-            print(g)
 
         return render(
             request,
@@ -89,27 +85,26 @@ def analyze_data(request):
     if request.method == 'POST':
         chart_threads = []
         res_threads = []
-        plb_threads = []
+
+        # Holds all results and are parsed to the data template
         results = {}
         # TODO: Was supposed to handle exceptions
         err_messages = {}
         docname = request.session['document']
         csv = pd.DataFrame()
+        # Prepare a process pool with 4 workers to process all our data
+        # This does not activate the GIL as threads does.
         th_ex = ProcessPoolExecutor(max_workers=4)
-        # Prepare a variable to hold a list of our column headers
-        # If the document is a csv file, set the CSV for our tool and load the column headers into the headers variable
+
+        # If the document is a csv file, set the CSV.
         if docname.endswith('.csv'):
             csv = pd.read_csv('media/documents/' + docname)
 
-        def put_plb(result):
-            print(result)
-            #if results.get(result[0]) is None:
-            #    results.update({result[0] : []})
-            #results.get(result[0]).append({'html': mark_safe(result[1])})
-
+        # Puts our non-chart results in our results dictionary
         def put_result(result):
             results.update({result[0]: result[1]})
 
+        # Unwraps and puts our charts in our results disctionary
         def put_chart(result):
             if results.get(result[0]) is None:
                 results.update({result[0] : []})
@@ -117,33 +112,38 @@ def analyze_data(request):
 
         # For every function we have checked in our form
         for func in request.POST.getlist('functions'):
-            
+
+            # Gives the maximum value for all the headers and returns the requested info headers for that row
             if func == "AMAX":
                 future = th_ex.submit(maximum_value, csv,
-                                        request.POST.getlist('AMAX_headers'),
-                                        request.POST.getlist('AMAX_info_headers'))
+                                        request.POST.getlist(func + '_headers'),
+                                        request.POST.getlist(func + '_info_headers'))
 
                 res_threads.append(future)
 
+            # Generates a bar chart of occurences
             elif func == "BAR":
                 # Get the Chart object from our tool and convert it to the required components to show in the template
-                bar_headers = request.POST.getlist('BAR_headers')
+                bar_headers = request.POST.getlist(func + '_headers')
                 for bar_header in bar_headers:
                     future = th_ex.submit(bar_chart, csv, bar_header)
                     chart_threads.append(future)
 
+            # Generates a bar chart of sums (of the header) and groups them by another header
             elif func == "BAR_SUM":
-                group_header = request.POST['BAR_SUM_group_by']
-                value_header = request.POST['BAR_SUM_header']
+                group_header = request.POST[func + '_group_by']
+                value_header = request.POST[func + '_header']
                 future = th_ex.submit(bar_chart_sum, csv, value_header, group_header)
                 chart_threads.append(future)
 
+            # Generates a histogram
             elif func == "HIST":
-                future = th_ex.submit(histogram, csv, request.POST['HIST_label'], request.POST['HIST_value'])
+                future = th_ex.submit(histogram, csv, request.POST[func + '_label'], request.POST[func + '_value'])
                 chart_threads.append(future)
 
+            # Generates a pie chart
             elif func == "PIE":
-                pie_headers = request.POST.getlist('PIE_headers')
+                pie_headers = request.POST.getlist(func + '_headers')
                 for pie_header in pie_headers:
                     # The following doesn't work, since matplotlib is not thread safe. Using bokeh instead
                     # future = th_ex.submit(pie_chart, csv, pie_header)
@@ -153,60 +153,69 @@ def analyze_data(request):
                     future = th_ex.submit(pie_chart_alternative, csv, pie_header)
                     chart_threads.append(future)
 
-
+            # Gives the minimum value for all the headers and returns the requested info headers for that row
             elif func == "AMIN":
                 future = th_ex.submit(minimum_value, csv,
-                                      request.POST.getlist('AMIN_headers'),
-                                      request.POST.getlist('AMIN_info_headers'))
+                                      request.POST.getlist(func + '_headers'),
+                                      request.POST.getlist(func + '_info_headers'))
                 res_threads.append(future)
 
+            # Finds median for a given header and groups it by something else
             elif func == "MED_FOR":
                 future = th_ex.submit(median_value_for, csv,
-                                          request.POST.getlist('MED_FOR_headers'),
-                                          request.POST['MED_FOR_group_by'])
+                                          request.POST.getlist(func + '_headers'),
+                                          request.POST[func + '_group_by'])
                 res_threads.append(future)
 
+            # Finds average for a single/whole column
             elif func == "AVG":
-                future = th_ex.submit(average_value, csv, request.POST.getlist('AVG_headers'))
+                future = th_ex.submit(average_value, csv, request.POST.getlist(func + '_headers'))
                 res_threads.append(future)
 
+            # Finds average for a column grouped by another column's unique values
             elif func == "AVG_FOR":
                 future = th_ex.submit(average_value_for, csv,
-                                      request.POST.getlist('AVG_FOR_headers'),
-                                      request.POST['AVG_FOR_group_by'])
+                                      request.POST.getlist(func + '_headers'),
+                                      request.POST[func + '_group_by'])
                 res_threads.append(future)
 
+            # Sum of all values in a column
             elif func == "SUM":
-                future = th_ex.submit(sums, csv, request.POST.getlist('SUM_headers'))
+                future = th_ex.submit(sums, csv, request.POST.getlist(func + '_headers'))
                 res_threads.append(future)
 
+            # Occurences for a specified header (unique counts)
             elif func == "OCCUR":
-                future = th_ex.submit(occurrences, csv, request.POST.getlist('OCCUR_headers'))
+                future = th_ex.submit(occurrences, csv, request.POST.getlist(func + '_headers'))
                 res_threads.append(future)
 
+            # Generates a scatter chart (all mixed up)
             elif func == "SCATTER":
-                scatter_x = request.POST['SCATTER_x']
-                scatter_y = request.POST['SCATTER_y']
+                scatter_x = request.POST[func + '_x']
+                scatter_y = request.POST[func + '_y']
                 future = th_ex.submit(scatter_chart, csv, scatter_x, scatter_y)
                 chart_threads.append(future)
 
+            # Generates a more useful scatter chart where points get grouped by something
             elif func == "SCATTER_GROUP":
-                scatter_x = request.POST['SCATTER_GROUP_x']
-                scatter_y = request.POST['SCATTER_GROUP_y']
-                grouped_by = request.POST['SCATTER_GROUP_by']
+                scatter_x = request.POST[func + '_x']
+                scatter_y = request.POST[func + '_y']
+                grouped_by = request.POST[func + '_by']
                 future = th_ex.submit(scatter_chart_grouped, csv, scatter_x, scatter_y, grouped_by)
                 chart_threads.append(future)
 
+            # Generate a line chart with a single line
             elif func == "LINE":
-                line_x = request.POST['LINE_x']
-                line_y = request.POST['LINE_y']
+                line_x = request.POST[func + '_x']
+                line_y = request.POST[func + '_y']
                 future = th_ex.submit(line_graph, csv, line_x, line_y)
                 chart_threads.append(future)
 
+            # Generate a line chart with multiple lines.
             elif func == "LINE_MULTI":
-                line_x = request.POST['LINE_MULTI_x']
-                line_y = request.POST['LINE_MULTI_y']
-                grouped_by = request.POST['LINE_MULTI_group']
+                line_x = request.POST[func + '_x']
+                line_y = request.POST[func + '_y']
+                grouped_by = request.POST[func + '_group']
                 future = th_ex.submit(multiple_lines, csv, line_x, line_y, grouped_by)
                 chart_threads.append(future)
 
@@ -219,9 +228,6 @@ def analyze_data(request):
 
         for th in res_threads:
             put_result(th.result())
-
-        for th in plb_threads:
-            print(th.result())
 
         return render(
             request,
