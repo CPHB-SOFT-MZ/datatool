@@ -90,10 +90,9 @@ def minimum_value(csv, value_headers, info_headers):
 def median_value_for(csv, value_headers, group_by):
     print("Finding median value grouped by " + group_by)
     df_return = []
-    uniques = np.unique(csv[group_by])
 
     # For every unique value in the group_by column (Ex. cities)
-    for unique in uniques:
+    for unique in np.unique(csv[group_by]):
         res_med = DataContainer()
 
         # Update the info_headers in the DataContainer object so we know what data we want from the median
@@ -129,10 +128,9 @@ def average_value(csv, value_headers):
 def average_value_for(csv, value_headers, group_by):
     print("Finding average grouped by " + group_by)
     df_return = []
-    uniques = np.unique(csv[group_by])
 
     # For every unique value of the requested group_by column
-    for unique in uniques:
+    for unique in np.unique(csv[group_by]):
         res_avg = DataContainer()
         res_avg.info_headers.update({group_by: unique})
 
@@ -170,8 +168,7 @@ def occurrences(csv, value_headers):
 
         # Creates a list of tuples
         # zip([1,2,3], [4,5,6]) == [(1,4), (2,5), (3,6)]
-        res = zip(info, count)
-        for r in res:
+        for r in zip(info, count):
             res_occ.append_value_header(r[0], r[1])
         res_occ.info_headers.update({value_header: ""})
         tuple_list.append(res_occ)
@@ -185,7 +182,7 @@ def pie_chart_alternative(csv, group_by):
     return 'pie', convert_chart(d)
 
 
-# Pie chart with matplotlib (is not currently in use...)
+# Pie chart with matplotlib (is currently not in use...)
 def pie_chart(csv, group_by):
     print("Baking pie...")
     labels, counts = np.unique(np.array(csv[group_by]), return_counts=True)

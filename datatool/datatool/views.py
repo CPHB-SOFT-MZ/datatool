@@ -43,12 +43,9 @@ def index(request):
 def remove(request, file_name):
     if request.method == 'GET':
         doc = Document.objects.get(file_name=file_name)
-        try:
-            if os.path.isfile(doc.docfile.path):
-                os.remove(doc.docfile.path)
-                doc.delete()
-        except Exception as e:
-            print(e)
+        with os.path.isfile(doc.docfile.path):
+            os.remove(doc.docfile.path)
+            doc.delete()
 
         return HttpResponseRedirect(reverse('index'))
 
